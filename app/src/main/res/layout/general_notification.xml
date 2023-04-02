@@ -96,7 +96,9 @@
             android:orientation="horizontal"
             tools:ignore="UnusedAttribute">
             <!-- media buttons will be added here -->
-            <ImageButton android:id="@+id/action_prev"
+
+            <ImageButton
+                android:id="@+id/action_prev"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="48dp"
                 android:layout_height="match_parent"
@@ -108,7 +110,7 @@
                 android:padding="8dp"
                 android:scaleType="fitCenter"
 
-                tools:src="@drawable/ic_skip_previous_white_24dp"/>
+                tools:src="@drawable/ic_skip_previous_white_24dp" />
 
             <ImageButton android:id="@+id/action_play_pause"
                 style="@style/Widget.AppCompat.Button.Borderless"
