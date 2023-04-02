@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PROJECT2_MediaPlayer</string>
+    <string name="bottom_listMusic">List Music</string>
+    <string name="bottom_setting">Setting</string>
+    <string name="bottom_author">Author</string>
+
+</resources>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="74dp"
+    android:background="@drawable/ripple_effect"
+    tools:background="#444444">
+
+    <ImageView
+        android:id="@+id/music_image"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="22dp"
+        android:src="@drawable/music_empty"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/music_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/music_author"
+        app:layout_constraintStart_toEndOf="@id/music_image"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        android:hint="Name"
+        android:textColorHint="@color/title"
+        android:textColor= "@color/title" />
+
+    <TextView
+        android:id="@+id/music_author"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/music_name"
+        app:layout_constraintTop_toBottomOf="@id/music_name"
+        tools:text="Text" />
+    
+    <ImageView
+        android:id="@+id/menu_button"
+        android:layout_width="74dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:srcCompat="@drawable/addplaylist"
+        app:tint="@color/white"
+        android:padding="22dp"
+        android:background="@drawable/ripple_effect"/>
+    <ImageView
+        android:id="@+id/quick_play_pause"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="@id/music_image"
+        app:layout_constraintEnd_toEndOf="@id/music_image"
+        app:layout_constraintTop_toTopOf="@id/music_image"
+        app:layout_constraintBottom_toBottomOf="@id/music_image"
+        android:elevation="1dp"
+        android:alpha="0.55"
+        app:tint="#394545" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="128dp"
+    xmlns:tools="http://schemas.android.com/tools">
+    <RelativeLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent"
+        android:background="@color/background_panel">
+
+        <ImageView
+            android:id="@+id/imgMusic"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_empty"/>
+
+        <ImageButton
+            android:id="@+id/action_quit"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/notification_selector"
+            android:src="@drawable/quit"
+            android:padding="6dp"
+            android:scaleType="fitCenter" />
+        <LinearLayout
+            android:id="@+id/media_titles"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@id/imgMusic"
+            android:layout_toLeftOf="@id/action_quit"
+            android:layout_toRightOf="@id/imgMusic"
+            android:layout_toStartOf="@id/action_quit"
+            android:minHeight="@dimen/notification_large_icon_height"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:singleLine="true"
+                android:text="Title"
+                android:textColor="@color/title"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-1dp"
+                android:layout_marginTop="-1dp"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:singleLine="true"
+                android:text="Name"
+                android:textColor="@color/white"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/text2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/media_actions"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_below="@+id/media_titles"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@id/imgMusic"
+            android:layout_toRightOf="@id/imgMusic"
+            android:layoutDirection="ltr"
+            android:orientation="horizontal"
+            tools:ignore="UnusedAttribute">
+            <!-- media buttons will be added here -->
+            <ImageButton android:id="@+id/action_prev"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/notification_selector"
+                android:gravity="center"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+
+                tools:src="@drawable/ic_skip_previous_white_24dp"/>
+
+            <ImageButton android:id="@+id/action_play_pause"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/notification_selector"
+                android:gravity="center"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+
+                tools:src="@drawable/ic_play_white"/>
+
+            <ImageButton android:id="@+id/action_next"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/notification_selector"
+                android:gravity="center"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+
+                tools:src="@drawable/ic_skip_next_white_24dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>
