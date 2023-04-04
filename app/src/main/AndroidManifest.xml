@@ -27,6 +27,7 @@
             </intent-filter>
         </activity>
         <service android:name=".MyService"/>
+        <receiver android:name=".Receiver"/>
     </application>
 
 </manifest>

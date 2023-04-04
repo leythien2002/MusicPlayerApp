@@ -2,10 +2,15 @@ package com.example.project2_mediaplayer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.project2_mediaplayer.transformer.ZoomOutPageTransformer;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -13,6 +18,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final int REQUEST_PERMISSION_CODE=10;
     private ViewPager2 mViewpager2;
     private BottomNavigationView mBottomNavigationView;
 
@@ -20,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getPermiss();
         mViewpager2 = findViewById(R.id.view_pager_2);
         mViewpager2.setPageTransformer(new ZoomOutPageTransformer());
         mBottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -64,4 +71,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    //checkpermission granted ?
+    private void getPermiss(){
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M){
+            return;
+        }
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            String[] permission={Manifest.permission.POST_NOTIFICATIONS};
+            requestPermissions(permission,REQUEST_PERMISSION_CODE);
+        }
+    }
+
+
 }
