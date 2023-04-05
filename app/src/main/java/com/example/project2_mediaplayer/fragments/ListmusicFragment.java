@@ -1,6 +1,7 @@
 package com.example.project2_mediaplayer.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,17 +36,17 @@ public class ListmusicFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.fragment_listmusic,container,false);
+        mView = inflater.inflate(R.layout.fragment_listmusic, container, false);
 
         list = new ArrayList<>();
 
         rcvMusic = mView.findViewById(R.id.rcv_music);
-        musicAdapter =new MusicAdapter(getContext(),getListMusic());
+        musicAdapter = new MusicAdapter(getContext(),getListMusic());
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         rcvMusic.setLayoutManager(layoutManager);
 
-        musicAdapter.setData(getListMusic());
+//        musicAdapter.setData(getListMusic());
         rcvMusic.setAdapter(musicAdapter);
 
 
@@ -57,12 +60,8 @@ public class ListmusicFragment extends Fragment {
 
     private List<Music> getListMusic() {
 
-//        list.add(new Music(R.drawable.music1,"Anh nho ra","Vu",R.raw.music1));
-//        list.add(new Music(R.drawable.music2,"Bone","Imagine Dragons",R.raw.music2));
-//        list.add(new Music(R.drawable.music1,"Anh nho ra","Vu2",R.raw.music1));
-//        list.add(new Music(R.drawable.music1,"Anh nho ra","Vu3",R.raw.music2));
-//        list.add(new Music(R.drawable.music1,"Anh nho ra","Vu4",R.raw.music2));
-        DatabaseReference database= FirebaseDatabase.getInstance().getReference("music/songs");
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/songs");
         database.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -93,6 +92,29 @@ public class ListmusicFragment extends Fragment {
 
             }
         });
+//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("music/songs");
+//        Query query = ref.orderByChild("authorName").equalTo("Hoàng Dũng");
+//
+//        ValueEventListener eventListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // Handle the retrieved data here
+//                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+//                    Music music = childSnapshot.getValue(Music.class);
+//                    if (music != null) {
+//                        list.add(music);
+//                    }
+//                    musicAdapter.notifyDataSetChanged();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                // Handle the error
+//                Log.e("loaddata", "Error retrieving data", databaseError.toException());
+//            }
+//        };
+//        query.addListenerForSingleValueEvent(eventListener);
         return list;
     }
 
