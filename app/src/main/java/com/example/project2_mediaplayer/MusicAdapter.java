@@ -3,6 +3,7 @@ package com.example.project2_mediaplayer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,20 +16,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHolder> {
     private Context context;
 
-    private List<Music> mListmusic;
+    private ArrayList<Music> mListmusic;
 
 
-    public MusicAdapter(Context context, List<Music> mListmusic) {
+    public MusicAdapter(Context context, ArrayList<Music> mListmusic) {
         this.context = context;
         this.mListmusic = mListmusic;
     }
 
-    public  void setData(List<Music> list){
+    public  void setData(ArrayList<Music> list){
         this.mListmusic =list;
         notifyDataSetChanged();
     }
@@ -49,20 +51,31 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 //        holder.imgMusicImage.setImageResource(music.getSongimage());
         holder.tvMusicAuthor.setText(music.getAuthorName());
         holder.tvMusicName.setText(music.getSongTitle());
+
+
+        int index=holder.getAdapterPosition();
+
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startPlaying(music);
+                startPlaying(music,index);
             }
         });
 
 
 
     }
+
     private void startPlaying(Music music) {
+
+    private void startPlaying(Music music,int index) {
+
         Intent i=new Intent(context,MusicPlaying.class);
         Bundle bundle=new Bundle();
         bundle.putSerializable("MusicObject",music);
+        bundle.putInt("index",index);
+        bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
+
         i.putExtras(bundle);
         context.startActivity(i);
     }

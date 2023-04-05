@@ -21,8 +21,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,9 @@ public class ListmusicFragment extends Fragment {
     private View mView;
     private RecyclerView rcvMusic;
     private MusicAdapter musicAdapter;
-    private List<Music> list;
+
+    private ArrayList<Music> list;
+
 
     @Nullable
     @Override
@@ -40,13 +44,17 @@ public class ListmusicFragment extends Fragment {
 
         list = new ArrayList<>();
 
+        getListMusic();
         rcvMusic = mView.findViewById(R.id.rcv_music);
-        musicAdapter = new MusicAdapter(getContext(),getListMusic());
+        musicAdapter =new MusicAdapter(getContext(),list);
+
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         rcvMusic.setLayoutManager(layoutManager);
 
-//        musicAdapter.setData(getListMusic());
+
+        musicAdapter.setData(list);
+
         rcvMusic.setAdapter(musicAdapter);
 
 
@@ -58,10 +66,12 @@ public class ListmusicFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    private List<Music> getListMusic() {
 
+    private void getListMusic() {
 
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/songs");
+       list.add(new Music(R.drawable.music1,"Anh nho ra","Vu4",R.raw.music2));
+       DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/songs");
+
         database.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -92,6 +102,7 @@ public class ListmusicFragment extends Fragment {
 
             }
         });
+
 //        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("music/songs");
 //        Query query = ref.orderByChild("authorName").equalTo("Hoàng Dũng");
 //
@@ -116,6 +127,7 @@ public class ListmusicFragment extends Fragment {
 //        };
 //        query.addListenerForSingleValueEvent(eventListener);
         return list;
+
     }
 
 }
