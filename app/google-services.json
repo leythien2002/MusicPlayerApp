@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "317560413958",
-    "firebase_url": "https://mediaplayer-9e488-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "mediaplayer-9e488",
-    "storage_bucket": "mediaplayer-9e488.appspot.com"
+    "project_number": "1077745268960",
+    "firebase_url": "https://musicapp-4dbdb-default-rtdb.firebaseio.com",
+    "project_id": "musicapp-4dbdb",
+    "storage_bucket": "musicapp-4dbdb.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:317560413958:android:3ee39cd405962b23d34887",
+        "mobilesdk_app_id": "1:1077745268960:android:ab892921d11cc6ba15f885",
         "android_client_info": {
           "package_name": "com.example.project2_mediaplayer"
         }
       },
       "oauth_client": [
         {
-          "client_id": "317560413958-jgij6if6k6v5p5s0rvbk01f9kc05ad6c.apps.googleusercontent.com",
+          "client_id": "1077745268960-2g70lrkls9ohikn1fvs6il4ehs695j1h.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDEhGVOplpvwjtFPETFw4IOpKdHd-gOVQo"
+          "current_key": "AIzaSyDCUpRUCPk5UZmHh51tSgI2izUMgpCEpOg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "317560413958-jgij6if6k6v5p5s0rvbk01f9kc05ad6c.apps.googleusercontent.com",
+              "client_id": "1077745268960-2g70lrkls9ohikn1fvs6il4ehs695j1h.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

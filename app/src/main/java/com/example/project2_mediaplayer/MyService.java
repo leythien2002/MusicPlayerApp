@@ -30,7 +30,8 @@ public class MyService extends Service {
     public static final int ACTION_PAUSE = 1;
     public static final int ACTION_RESUME = 2;
     public static final int ACTION_CLEAR = 3;
-    private MediaPlayer mediaPlayer;
+    private Context context;
+
     private Music music;
     private boolean isPlaying;
 
@@ -146,33 +147,71 @@ public class MyService extends Service {
         } else {
             action2 = new NotificationCompat.Action.Builder(R.drawable.ic_play_white, "Resume", getPendingIntent(this, ACTION_RESUME)).build();
         }
+        context = this;
+        Picasso.with(this).load(music.getSongimage()).into(new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_music)
+                        .setSubText("MediaApp")
+                        .setContentTitle(music.getSongTitle())
+                        .setContentText(music.getAuthorName())
+                        .setLargeIcon(bitmap)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        // Add media control buttons that invoke intents in your media service
+                        .addAction(R.drawable.ic_skip_previous_white_24dp, "Previous", null) // #0
+                        .addAction(action2)  // #1
+                        .addAction(R.drawable.ic_skip_next_white_24dp, "Next", null)     // #2
+                        //swipe to clear notification event
+                        .setDeleteIntent(getPendingIntent(context, ACTION_CLEAR))
+                        // Apply the media style template
+                        .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                                .setShowActionsInCompactView(1 /* #1: pause button */)
+                                .setMediaSession(mediaSessionCompat.getSessionToken()));
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+                if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_music)
-                .setSubText("MediaApp")
-                .setContentTitle(music.getSongTitle())
-                .setContentText(music.getAuthorName())
-                .setLargeIcon(bitmap)
-                // Show controls on lock screen even when user hides sensitive content.
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                // Add media control buttons that invoke intents in your media service
-                .addAction(R.drawable.ic_skip_previous_white_24dp, "Previous", null) // #0
-                .addAction(action2)  // #1
-                .addAction(R.drawable.ic_skip_next_white_24dp, "Next", null)     // #2
-                //swipe to clear notification event
-                .setDeleteIntent(getPendingIntent(this,ACTION_CLEAR))
-                // Apply the media style template
-                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                        .setShowActionsInCompactView(1 /* #1: pause button */)
-                        .setMediaSession(mediaSessionCompat.getSessionToken()))
-                .build();
+                }
+                notificationManager.notify(1, builder.build());
+            }
 
-        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
-        //check permission
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // ??
-        }
-        managerCompat.notify(1, notification); //id 1 la nó sẽ đè lên nhau, muốn nhiều notification thì đổi cách khác.
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        });
+
+//        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+//                .setSmallIcon(R.drawable.ic_music)
+//                .setSubText("MediaApp")
+//                .setContentTitle(music.getSongTitle())
+//                .setContentText(music.getAuthorName())
+//                .setLargeIcon(bitmap)
+//                // Show controls on lock screen even when user hides sensitive content.
+//                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+//                // Add media control buttons that invoke intents in your media service
+//                .addAction(R.drawable.ic_skip_previous_white_24dp, "Previous", null) // #0
+//                .addAction(action2)  // #1
+//                .addAction(R.drawable.ic_skip_next_white_24dp, "Next", null)     // #2
+//                //swipe to clear notification event
+//                .setDeleteIntent(getPendingIntent(this,ACTION_CLEAR))
+//                // Apply the media style template
+//                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+//                        .setShowActionsInCompactView(1 /* #1: pause button */)
+//                        .setMediaSession(mediaSessionCompat.getSessionToken()))
+//                .build();
+//
+//        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
+//        //check permission
+//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+//            // ??
+//        }
+//        managerCompat.notify(1, notification); //id 1 la nó sẽ đè lên nhau, muốn nhiều notification thì đổi cách khác.
 
     }
 

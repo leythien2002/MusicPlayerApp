@@ -91,8 +91,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
                 tvMusicAuthor = itemView.findViewById(R.id.music_author);
                 tvMusicName = itemView.findViewById(R.id.music_name);
                 imgMusicImage = itemView.findViewById(R.id.music_image);
-
-
             }
     }
 }
