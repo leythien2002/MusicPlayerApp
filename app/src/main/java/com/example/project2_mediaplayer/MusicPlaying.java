@@ -25,8 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -93,6 +95,8 @@ public class MusicPlaying extends AppCompatActivity {
         if(bundle==null){
             return;
         }
+
+
 //        music= (Music) bundle.get("MusicObject");
         currentIndex= (int) bundle.get("index");
         listSong=(ArrayList) bundle.getParcelableArrayList("ListSong");
@@ -160,6 +164,12 @@ public class MusicPlaying extends AppCompatActivity {
                 }
                 music=listSong.get(currentIndex);
                 sendActionToService(MyService.ACTION_PREV);
+            }
+        });
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

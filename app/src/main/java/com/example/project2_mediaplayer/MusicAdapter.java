@@ -51,7 +51,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 //        holder.imgMusicImage.setImageResource(music.getSongimage());
         holder.tvMusicAuthor.setText(music.getAuthorName());
         holder.tvMusicName.setText(music.getSongTitle());
+
+
         int index=holder.getAdapterPosition();
+
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,7 +65,11 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
 
     }
+
+    private void startPlaying(Music music) {
+
     private void startPlaying(Music music,int index) {
+
         Intent i=new Intent(context,MusicPlaying.class);
         Bundle bundle=new Bundle();
         bundle.putSerializable("MusicObject",music);
@@ -97,8 +104,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
                 tvMusicAuthor = itemView.findViewById(R.id.music_author);
                 tvMusicName = itemView.findViewById(R.id.music_name);
                 imgMusicImage = itemView.findViewById(R.id.music_image);
-
-
             }
     }
 }

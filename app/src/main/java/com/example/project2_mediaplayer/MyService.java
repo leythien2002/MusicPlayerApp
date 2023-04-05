@@ -30,8 +30,10 @@ public class MyService extends Service {
     public static final int ACTION_PAUSE = 1;
     public static final int ACTION_RESUME = 2;
     public static final int ACTION_CLEAR = 3;
+
     public static final int ACTION_NEXT=5;
     public static final int ACTION_PREV=6;
+
 
 
     private Context context;
@@ -68,6 +70,7 @@ public class MyService extends Service {
 
             }
         }
+
         handleActionMusic(action);
 
         return START_NOT_STICKY;
@@ -128,6 +131,8 @@ public class MyService extends Service {
 
     private PendingIntent getPendingIntent(Context context, int action) {
         Intent i = new Intent(this, Receiver.class);
+
+
         if(action==ACTION_NEXT&&index<size){
             index++;
         }
@@ -139,6 +144,7 @@ public class MyService extends Service {
         bundle.putSerializable("song", music);
         bundle.putInt("index",index);
         bundle.putInt("sizeList",size);
+
         i.putExtras(bundle);
         return PendingIntent.getBroadcast(context.getApplicationContext(), action, i, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -146,6 +152,8 @@ public class MyService extends Service {
     private void sendNotification(Music music) {
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
 
 
 
@@ -170,9 +178,11 @@ public class MyService extends Service {
                         .setLargeIcon(bitmap)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         // Add media control buttons that invoke intents in your media service
+
                         .addAction(R.drawable.ic_skip_previous_white_24dp, "Previous", getPendingIntent(context, ACTION_PREV)) // #0
                         .addAction(action2)  // #1
                         .addAction(R.drawable.ic_skip_next_white_24dp, "Next", getPendingIntent(context, ACTION_NEXT))     // #2
+
                         //swipe to clear notification event
                         .setDeleteIntent(getPendingIntent(context, ACTION_CLEAR))
                         // Apply the media style template
