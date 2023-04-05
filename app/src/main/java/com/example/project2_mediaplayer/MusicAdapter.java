@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHolder> {
@@ -43,9 +45,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
         if(music == null){
             return;
         }
-        holder.imgMusicImage.setImageResource(music.getMusicId());
-        holder.tvMusicAuthor.setText(music.getMusicAuthor());
-        holder.tvMusicName.setText(music.getMusicName());
+        Picasso.with(context).load(music.getSongimage()).into(holder.imgMusicImage);
+//        holder.imgMusicImage.setImageResource(music.getSongimage());
+        holder.tvMusicAuthor.setText(music.getAuthorName());
+        holder.tvMusicName.setText(music.getSongTitle());
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,7 +59,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
 
     }
-
     private void startPlaying(Music music) {
         Intent i=new Intent(context,MusicPlaying.class);
         Bundle bundle=new Bundle();
@@ -84,6 +86,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
             public MusicViewHolder(@NonNull View itemView) {
                 super(itemView);
+
                 constraintLayout=itemView.findViewById(R.id.item_layout);
                 tvMusicAuthor = itemView.findViewById(R.id.music_author);
                 tvMusicName = itemView.findViewById(R.id.music_name);

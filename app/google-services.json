@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "317560413958",
+    "firebase_url": "https://mediaplayer-9e488-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "mediaplayer-9e488",
+    "storage_bucket": "mediaplayer-9e488.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317560413958:android:3ee39cd405962b23d34887",
+        "android_client_info": {
+          "package_name": "com.example.project2_mediaplayer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317560413958-jgij6if6k6v5p5s0rvbk01f9kc05ad6c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEhGVOplpvwjtFPETFw4IOpKdHd-gOVQo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317560413958-jgij6if6k6v5p5s0rvbk01f9kc05ad6c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

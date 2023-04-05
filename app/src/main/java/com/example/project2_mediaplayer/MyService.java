@@ -1,9 +1,7 @@
 package com.example.project2_mediaplayer;
 
-import static com.example.project2_mediaplayer.MainActivity.REQUEST_PERMISSION_CODE;
 import static com.example.project2_mediaplayer.MyApplication.CHANNEL_ID;
 
-import android.Manifest;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -12,25 +10,26 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 public class MyService extends Service {
-    public static final int ACTION_PAUSE=1;
-    public static final int ACTION_RESUME=2;
-    public static final int ACTION_CLEAR=3;
+    public static final int ACTION_PAUSE = 1;
+    public static final int ACTION_RESUME = 2;
+    public static final int ACTION_CLEAR = 3;
     private MediaPlayer mediaPlayer;
     private Music music;
     private boolean isPlaying;
@@ -58,13 +57,13 @@ public class MyService extends Service {
             }
 
         }
-        int action=intent.getIntExtra("action_music_service",0);
+        int action = intent.getIntExtra("action_music_service", 0);
         handleActionMusic(action);
 
         return START_NOT_STICKY;
     }
 
-//    private void startMusic(Music music) {
+    //    private void startMusic(Music music) {
 //        if (mediaPlayer == null) {
 //            mediaPlayer = MediaPlayer.create(getApplicationContext(), music.getResource());
 //        }
@@ -72,8 +71,8 @@ public class MyService extends Service {
 //        isPlaying=true;
 //
 //    }
-    private void handleActionMusic(int action){
-        switch (action){
+    private void handleActionMusic(int action) {
+        switch (action) {
             case ACTION_PAUSE:
                 pauseMusic();
                 break;
@@ -86,31 +85,34 @@ public class MyService extends Service {
                 break;
         }
     }
-    private void pauseMusic(){
+
+    private void pauseMusic() {
 //        if(mediaPlayer!=null&&isPlaying){
-        if(isPlaying){
+        if (isPlaying) {
 //            mediaPlayer.pause();
-            isPlaying=false;
+            isPlaying = false;
             sendActionToActivity(ACTION_PAUSE);
             sendNotification(music);
         }
     }
-    private void resumeMusic(){
+
+    private void resumeMusic() {
 //        if(mediaPlayer!=null&&isPlaying){
-        if(!isPlaying){
+        if (!isPlaying) {
 //            mediaPlayer.start();
-            isPlaying=true;
+            isPlaying = true;
             sendActionToActivity(ACTION_RESUME);
             sendNotification(music);
         }
     }
-    private PendingIntent getPendingIntent(Context context, int action){
-        Intent i=new Intent(this, Receiver.class);
-        i.putExtra("action_music",action);
-        Bundle bundle=new Bundle();
-        bundle.putSerializable("song",music);
+
+    private PendingIntent getPendingIntent(Context context, int action) {
+        Intent i = new Intent(this, Receiver.class);
+        i.putExtra("action_music", action);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("song", music);
         i.putExtras(bundle);
-        return PendingIntent.getBroadcast(context.getApplicationContext(),action,i,PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), action, i, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private void sendNotification(Music music) {
@@ -119,35 +121,37 @@ public class MyService extends Service {
 
         //set layout for nofitication
 //        Bitmap bitmap= BitmapFactory.decodeResource(getResources(),music.getMusicId());
-//        RemoteViews remoteView=new RemoteViews(getPackageName(),R.layout.general_notification);
-//        remoteView.setTextViewText(R.id.title,music.getMusicName());
-//        remoteView.setTextViewText(R.id.author,music.getMusicAuthor());
-//        remoteView.setImageViewBitmap(R.id.imgMusic,bitmap);
-//        //check status music
-//        remoteView.setImageViewResource(R.id.action_play_pause,R.drawable.pause);
+//        RemoteViews remoteView = new RemoteViews(getPackageName(), R.layout.general_notification);
+//        remoteView.setTextViewText(R.id.title, music.getSongTitle());
+//        remoteView.setTextViewText(R.id.author, music.getAuthorName());
+////        remoteView.setImageViewBitmap(R.id.imgMusic,R.drawable.que);
 //
-//        Notification notification=new NotificationCompat.Builder(this,CHANNEL_ID)
+//        //check status music
+//        remoteView.setImageViewResource(R.id.action_play_pause, R.drawable.pause);
+//
+//        Notification notification1 = new NotificationCompat.Builder(this, CHANNEL_ID)
 //                .setSmallIcon(R.drawable.author)
 //                .setContentIntent(pendingIntent)
 //                .setCustomContentView(remoteView)
 //
 //                .build();
-//        startForeground(1,notification);
+//        startForeground(2, notification1);
+
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.que);
         MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(this, "tag");
         //set action pause and resume
         NotificationCompat.Action action2;
-        if(isPlaying){
-            action2=new NotificationCompat.Action.Builder(R.drawable.pause, "Pause", getPendingIntent(this,ACTION_PAUSE)).build();
-        }else{
-            action2=new NotificationCompat.Action.Builder(R.drawable.ic_play_white, "Resume", getPendingIntent(this,ACTION_RESUME)).build();
+        if (isPlaying) {
+            action2 = new NotificationCompat.Action.Builder(R.drawable.pause, "Pause", getPendingIntent(this, ACTION_PAUSE)).build();
+        } else {
+            action2 = new NotificationCompat.Action.Builder(R.drawable.ic_play_white, "Resume", getPendingIntent(this, ACTION_RESUME)).build();
         }
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_music)
                 .setSubText("MediaApp")
-                .setContentTitle(music.getMusicName())
-                .setContentText(music.getMusicAuthor())
+                .setContentTitle(music.getSongTitle())
+                .setContentText(music.getAuthorName())
                 .setLargeIcon(bitmap)
                 // Show controls on lock screen even when user hides sensitive content.
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

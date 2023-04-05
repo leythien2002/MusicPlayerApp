@@ -3,55 +3,77 @@ package com.example.project2_mediaplayer;
 import java.io.Serializable;
 
 public class Music implements Serializable {
-    private int musicId;
-    private String musicName;
-    private String musicAuthor;
+    private String songimage;
+    private int authorid;
+    private int songDuration;
+    private String songTitle;
+    private String authorName;
+    private String songLink;
 
-    private int resource;
-
-    public Music(int musicId, String musicName, String musicAuthor) {
-        this.musicId = musicId;
-        this.musicName = musicName;
-        this.musicAuthor = musicAuthor;
+    public Music() {
     }
 
-    public Music(int musicId, String musicName, String musicAuthor, int resource) {
-        this.musicId = musicId;
-        this.musicName = musicName;
-        this.musicAuthor = musicAuthor;
-        this.resource = resource;
+    public Music(String songimage, String songTitle, String authorName) {
+        this.songimage = songimage;
+        this.songTitle = songTitle;
+        this.authorName = authorName;
     }
 
-    public int getResource() {
-        return resource;
+    public Music(String songimage, int authorid, int songDuration, String songTitle, String authorName, String songLink) {
+        this.songimage = songimage;
+        this.authorid = authorid;
+        this.songDuration = songDuration;
+        this.songTitle = songTitle;
+        this.authorName = authorName;
+        this.songLink = songLink;
     }
 
-    public void setResource(int resource) {
-        this.resource = resource;
+    public int getAuthorid() {
+        return authorid;
     }
 
-    public int getMusicId() {
-        return musicId;
+    public void setAuthorid(int authorid) {
+        this.authorid = authorid;
     }
 
-    public void setMusicId(int musicId) {
-        this.musicId = musicId;
+    public int getSongDuration() {
+        return songDuration;
     }
 
-    public String getMusicName() {
-        return musicName;
+    public void setSongDuration(int songDuration) {
+        this.songDuration = songDuration;
     }
 
-    public void setMusicName(String musicName) {
-        this.musicName = musicName;
+    public String getSongLink() {
+        return songLink;
     }
 
-    public String getMusicAuthor() {
-        return musicAuthor;
+    public void setSongLink(String songLink) {
+        this.songLink = songLink;
     }
 
-    public void setMusicAuthor(String musicAuthor) {
-        this.musicAuthor = musicAuthor;
+    public String getSongimage() {
+        return songimage;
+    }
+
+    public void setSongimage(String songimage) {
+        this.songimage = songimage;
+    }
+
+    public String getSongTitle() {
+        return songTitle;
+    }
+
+    public void setSongTitle(String songTitle) {
+        this.songTitle = songTitle;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
 

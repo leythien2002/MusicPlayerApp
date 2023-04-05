@@ -10,14 +10,21 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -76,15 +83,21 @@ public class MusicPlaying extends AppCompatActivity {
             return;
         }
         music= (Music) bundle.get("MusicObject");
-        tvMusicName.setText(music.getMusicName());
-        tvAuthor.setText(music.getMusicAuthor());
+        tvMusicName.setText(music.getSongTitle());
+        tvAuthor.setText(music.getAuthorName());
         //set Image for ImageView (disk play)
-        Bitmap img= BitmapFactory.decodeResource(getResources(),music.getMusicId());
-//        circleImageView.setImageResource(music.getResource());
-        circleImageView.setImageBitmap(img);
+
+        Picasso.with(this).load(music.getSongimage()).into(circleImageView);
         //control music
         animation= AnimationUtils.loadAnimation(this,R.anim.rotation);
-        mediaPlayer=MediaPlayer.create(this,music.getResource());
+
+        mediaPlayer=MediaPlayer.create(this,Uri.parse(music.getSongLink()));
+//        try {
+//
+//            mediaPlayer.setDataSource(Uri.parse(music.getSongLink()));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         mediaPlayer.setLooping(true);
         mediaPlayer.seekTo(0);
         String duration= millisecondsToString(mediaPlayer.getDuration());
@@ -110,6 +123,12 @@ public class MusicPlaying extends AppCompatActivity {
                     handleAction(MyService.ACTION_RESUME);
                 }
 
+
+            }
+        });
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
             }
         });
@@ -206,7 +225,6 @@ public class MusicPlaying extends AppCompatActivity {
                 mediaPlayer.start();
                 btnPlay.setImageResource(R.drawable.pause);
                 circleImageView.startAnimation(animation);
-
                 isPlaying=true;
                 break;
         }
