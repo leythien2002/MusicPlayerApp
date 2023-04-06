@@ -30,10 +30,8 @@ public class MyService extends Service {
     public static final int ACTION_PAUSE = 1;
     public static final int ACTION_RESUME = 2;
     public static final int ACTION_CLEAR = 3;
-
     public static final int ACTION_NEXT=5;
     public static final int ACTION_PREV=6;
-
 
 
     private Context context;
@@ -41,6 +39,7 @@ public class MyService extends Service {
     private Music music;
     private boolean isPlaying;
     private int index,size;
+
 
 
     @Override
@@ -64,13 +63,13 @@ public class MyService extends Service {
             if (music != null) {
 //                startMusic(music);
                 if(action!=ACTION_CLEAR){
+                    isPlaying= (boolean) bundle.get("checkPlay");
                     index= (int) bundle.get("index");
                     sendNotification(music);
                 }
 
             }
         }
-
         handleActionMusic(action);
 
         return START_NOT_STICKY;
@@ -97,12 +96,12 @@ public class MyService extends Service {
                 sendActionToActivity(ACTION_CLEAR);
                 break;
             case ACTION_NEXT:
-                isPlaying=false;
+                isPlaying=true;
                 sendActionToActivity(ACTION_NEXT);
                 sendNotification(music);
                 break;
             case ACTION_PREV:
-                isPlaying=false;
+                isPlaying=true;
                 sendActionToActivity(ACTION_PREV);
                 sendNotification(music);
                 break;
@@ -132,19 +131,12 @@ public class MyService extends Service {
     private PendingIntent getPendingIntent(Context context, int action) {
         Intent i = new Intent(this, Receiver.class);
 
-
-        if(action==ACTION_NEXT&&index<size){
-            index++;
-        }
-        if(action==ACTION_PREV&&index>0){
-            index--;
-        }
         i.putExtra("action_music", action);
         Bundle bundle = new Bundle();
         bundle.putSerializable("song", music);
+        bundle.putBoolean("checkPlay",isPlaying);
         bundle.putInt("index",index);
         bundle.putInt("sizeList",size);
-
         i.putExtras(bundle);
         return PendingIntent.getBroadcast(context.getApplicationContext(), action, i, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -152,8 +144,6 @@ public class MyService extends Service {
     private void sendNotification(Music music) {
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
 
 
 
@@ -178,11 +168,9 @@ public class MyService extends Service {
                         .setLargeIcon(bitmap)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         // Add media control buttons that invoke intents in your media service
-
-                        .addAction(R.drawable.ic_skip_previous_white_24dp, "Previous", getPendingIntent(context, ACTION_PREV)) // #0
+                        .addAction(R.drawable.ic_skip_previous_white_24dp, "Previous", getPendingIntent(context,ACTION_PREV)) // #0
                         .addAction(action2)  // #1
-                        .addAction(R.drawable.ic_skip_next_white_24dp, "Next", getPendingIntent(context, ACTION_NEXT))     // #2
-
+                        .addAction(R.drawable.ic_skip_next_white_24dp, "Next",getPendingIntent(context,ACTION_NEXT))     // #2
                         //swipe to clear notification event
                         .setDeleteIntent(getPendingIntent(context, ACTION_CLEAR))
                         // Apply the media style template
