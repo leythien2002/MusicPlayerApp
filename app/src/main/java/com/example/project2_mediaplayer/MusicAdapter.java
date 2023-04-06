@@ -66,7 +66,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
     }
 
-    private void startPlaying(Music music) {
+
 
     private void startPlaying(Music music,int index) {
 
