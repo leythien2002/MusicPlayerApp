@@ -15,9 +15,17 @@ public class Receiver extends BroadcastReceiver {
         Music song= (Music) intent.getExtras().get("song");
         int index= (int) intent.getExtras().get("index");
         int size= (int) intent.getExtras().get("sizeList");
+        if(actionMusic==MyService.ACTION_NEXT&&index<size-1){
+            index++;
+        }
+        if(actionMusic==MyService.ACTION_PREV&&index>0){
+            index--;
+        }
+        boolean isPlaying= (boolean) intent.getExtras().get("checkPlay");
         Intent iService=new Intent(context,MyService.class);
         iService.putExtra("action_music_service",actionMusic);
         iService.putExtra("song",song);
+        iService.putExtra("checkPlay",isPlaying);
         iService.putExtra("index",index);
         iService.putExtra("sizeList",size);
         context.startService(iService);

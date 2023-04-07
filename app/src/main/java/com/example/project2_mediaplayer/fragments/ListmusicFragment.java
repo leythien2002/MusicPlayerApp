@@ -69,7 +69,11 @@ public class ListmusicFragment extends Fragment {
 
     private List<Music> getListMusic() {
 
-       DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/songs");
+
+      DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/songs");
+
+
+    //   DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/song");
 
         database.addChildEventListener(new ChildEventListener() {
             @Override
@@ -83,7 +87,17 @@ public class ListmusicFragment extends Fragment {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+//                Music tmp=snapshot.getValue(Music.class);
+//                if(tmp ==null||list==null||list.isEmpty()){
+//                    return;
+//                }
+//                for (int i=0;i<list.size();i++){
+//                    //cai nay phai can id
+//                    if(tmp.getSongLink()==list.get(i).getSongLink()){
+//                        list.set(i,tmp);
+//                    }
+//                }
+//                musicAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -125,7 +139,7 @@ public class ListmusicFragment extends Fragment {
 //            }
 //        };
 //        query.addListenerForSingleValueEvent(eventListener);
-        return list;
+
 
     }
 

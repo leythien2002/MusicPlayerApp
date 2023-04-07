@@ -25,10 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -47,6 +45,7 @@ public class MusicPlaying extends AppCompatActivity {
     private int currentIndex;
     private Thread thread;
     private Runnable runnable;
+
     //get Broadcast receiver. Cai nay dung de giao tiep giua activity va forceground
     private BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
         @Override
@@ -95,8 +94,6 @@ public class MusicPlaying extends AppCompatActivity {
         if(bundle==null){
             return;
         }
-
-
 //        music= (Music) bundle.get("MusicObject");
         currentIndex= (int) bundle.get("index");
         listSong=(ArrayList) bundle.getParcelableArrayList("ListSong");
@@ -117,7 +114,7 @@ public class MusicPlaying extends AppCompatActivity {
 
         Picasso.with(this).load(music.getSongimage()).into(circleImageView);
         //control music
-
+        setRunnableForThread();
 
 
     }
@@ -146,11 +143,12 @@ public class MusicPlaying extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(currentIndex<listSong.size()){
+                if(currentIndex<listSong.size()-1){
                     currentIndex++;
+                    music=listSong.get(currentIndex);
+                    sendActionToService(MyService.ACTION_NEXT);
                 }
-                music=listSong.get(currentIndex);
-                sendActionToService(MyService.ACTION_NEXT);
+
 //                handleAction(MyService.ACTION_NEXT);
 
 
@@ -164,12 +162,6 @@ public class MusicPlaying extends AppCompatActivity {
                 }
                 music=listSong.get(currentIndex);
                 sendActionToService(MyService.ACTION_PREV);
-            }
-        });
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
             }
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -196,8 +188,6 @@ public class MusicPlaying extends AppCompatActivity {
         setRunnableForThread();
 
 
-
-
     }
 
 
@@ -213,13 +203,14 @@ public class MusicPlaying extends AppCompatActivity {
                 isPlaying=false;
                 break;
             case MyService.ACTION_CLEAR: //cai nut tat
+                isPlaying=false;
                 LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
                 stopService();
                 if(mediaPlayer!=null){
-
+                    mediaPlayer.reset();
                     mediaPlayer.release();
                     mediaPlayer=null;
-//                    thread.interrupt();
+                    thread.interrupt();
                 }
 
 
@@ -234,13 +225,18 @@ public class MusicPlaying extends AppCompatActivity {
                 break;
             case MyService.ACTION_NEXT:
                 //chi can interrupt no roi gan runnable moi :v ez
-                thread.interrupt();
+//                thread.interrupt();
+                isPlaying=true;
                 setCurrentSong();
-
+                setRunnableForThread();
                 break;
             case MyService.ACTION_PREV:
-                thread.interrupt();
+
+//                thread.interrupt();
+                isPlaying=true;
+
                 setCurrentSong();
+                setRunnableForThread();
                 break;
 
 
@@ -251,6 +247,7 @@ public class MusicPlaying extends AppCompatActivity {
         Bundle bundle=new Bundle();
         bundle.putSerializable("song",music);
         bundle.putInt("index",currentIndex);
+        bundle.putBoolean("checkPlay",isPlaying);
         bundle.putInt("sizeList",listSong.size());
         i.putExtras(bundle);
         i.putExtra("action_music_service",action);//cai nay licen quan toi receiver .
@@ -267,9 +264,6 @@ public class MusicPlaying extends AppCompatActivity {
             mediaPlayer.reset();
             mediaPlayer.release();
             mediaPlayer=null;
-
-
-
         }
         mediaPlayer=MediaPlayer.create(this,Uri.parse(music.getSongLink()));
 
@@ -283,11 +277,16 @@ public class MusicPlaying extends AppCompatActivity {
             }
         });
 
-        String duration= millisecondsToString(mediaPlayer.getDuration());
-        tvTimeTotal.setText(duration);
+//        String duration= millisecondsToString(mediaPlayer.getDuration());
+//        tvTimeTotal.setText(duration);
         seekBar.setMax(mediaPlayer.getDuration());
+
+        tvMusicName.setText(music.getSongTitle());
+        tvAuthor.setText(music.getAuthorName());
+
         Picasso.with(this).load(music.getSongimage()).into(circleImageView);
-        setRunnableForThread();
+
+
     }
     private void setRunnableForThread(){
         runnable=new Runnable() {
@@ -311,6 +310,8 @@ public class MusicPlaying extends AppCompatActivity {
 
                         }
                     }
+
+
                 }
             }
         };
