@@ -67,9 +67,8 @@ public class ListmusicFragment extends Fragment {
     }
 
 
-    private void getListMusic() {
+    private List<Music> getListMusic() {
 
-       list.add(new Music(R.drawable.music1,"Anh nho ra","Vu4",R.raw.music2));
        DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/songs");
 
         database.addChildEventListener(new ChildEventListener() {

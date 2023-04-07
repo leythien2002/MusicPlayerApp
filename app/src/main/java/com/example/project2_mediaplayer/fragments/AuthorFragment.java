@@ -27,7 +27,7 @@ public class AuthorFragment extends Fragment {
     private View mView;
     RecyclerView rcvAuthor;
     private AuthorAdapter authorAdapter;
-    private List<Author> lstAuthor;
+    private ArrayList<Author> lstAuthor;
 
     @Nullable
     @Override
@@ -35,9 +35,9 @@ public class AuthorFragment extends Fragment {
         mView = inflater.inflate(R.layout.fragment_author,container,false);
 
         rcvAuthor = mView.findViewById(R.id.rcv_author);
-
-        authorAdapter =new AuthorAdapter();
         lstAuthor = new ArrayList<>();
+
+        authorAdapter =new AuthorAdapter(lstAuthor, getContext());
 
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());

@@ -1,6 +1,8 @@
 package com.example.project2_mediaplayer;
 
-public class Author {
+import java.io.Serializable;
+
+public class Author implements Serializable {
 
     private String authorname;
     private int authorid;
