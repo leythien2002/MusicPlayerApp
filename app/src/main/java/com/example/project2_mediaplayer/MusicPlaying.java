@@ -231,8 +231,10 @@ public class MusicPlaying extends AppCompatActivity {
                 setRunnableForThread();
                 break;
             case MyService.ACTION_PREV:
+
 //                thread.interrupt();
                 isPlaying=true;
+
                 setCurrentSong();
                 setRunnableForThread();
                 break;
@@ -248,7 +250,7 @@ public class MusicPlaying extends AppCompatActivity {
         bundle.putBoolean("checkPlay",isPlaying);
         bundle.putInt("sizeList",listSong.size());
         i.putExtras(bundle);
-        i.putExtra("action_music_service",action);//cai nay lien quan toi receiver .
+        i.putExtra("action_music_service",action);//cai nay licen quan toi receiver .
         startService(i);
     }
     private void stopService(){

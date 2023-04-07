@@ -67,9 +67,14 @@ public class ListmusicFragment extends Fragment {
     }
 
 
-    private void getListMusic() {
+    private List<Music> getListMusic() {
 
-       DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/song");
+
+      DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/songs");
+
+
+    //   DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/song");
+
         database.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {

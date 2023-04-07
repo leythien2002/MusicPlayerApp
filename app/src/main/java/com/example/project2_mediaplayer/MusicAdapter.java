@@ -21,7 +21,6 @@ import java.util.List;
 
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHolder> {
     private Context context;
-
     private ArrayList<Music> mListmusic;
 
 
@@ -29,6 +28,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
         this.context = context;
         this.mListmusic = mListmusic;
     }
+    public MusicAdapter(){}
 
     public  void setData(ArrayList<Music> list){
         this.mListmusic =list;
@@ -68,7 +68,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
 
 
-    private void startPlaying(Music music,int index) {
+    private void startPlaying(Music music, int index) {
 
         Intent i=new Intent(context,MusicPlaying.class);
         Bundle bundle=new Bundle();
@@ -99,7 +99,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
             public MusicViewHolder(@NonNull View itemView) {
                 super(itemView);
-
                 constraintLayout=itemView.findViewById(R.id.item_layout);
                 tvMusicAuthor = itemView.findViewById(R.id.music_author);
                 tvMusicName = itemView.findViewById(R.id.music_name);
