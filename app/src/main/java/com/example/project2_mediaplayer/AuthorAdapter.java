@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -50,7 +49,7 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorAdapter.AuthorView
             return;
         }
         AuthorViewHolder authorViewHolder = (AuthorViewHolder) holder;
-        Picasso.with(context).load(author.getAuthorimage1()).into(holder.imgAuthorImage);
+        Picasso.with(context).load(author.getAuthorimage()).into(holder.imgAuthorImage);
 //        musicViewHolder.imgAuthorImage.setImageResource(author.getResourceId());
         authorViewHolder.tvAuthorName.setText(author.getAuthorname());
 

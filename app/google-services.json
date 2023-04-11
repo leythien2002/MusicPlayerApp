@@ -1,44 +1,34 @@
 {
   "project_info": {
-
     "project_number": "464142463210",
     "firebase_url": "https://appmusic-2d5fb-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "appmusic-2d5fb",
     "storage_bucket": "appmusic-2d5fb.appspot.com"
-
   },
   "client": [
     {
       "client_info": {
-
         "mobilesdk_app_id": "1:464142463210:android:b9a374994fc80024266793",
-
         "android_client_info": {
           "package_name": "com.example.project2_mediaplayer"
         }
       },
       "oauth_client": [
         {
-
           "client_id": "464142463210-etspu77a56gf10621s3nsmomjk9k7tmi.apps.googleusercontent.com",
-
           "client_type": 3
         }
       ],
       "api_key": [
         {
-
           "current_key": "AIzaSyDPW_mRIVNuPGF1LWsKRb_vWpkZEprlJhI"
-
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-
               "client_id": "464142463210-etspu77a56gf10621s3nsmomjk9k7tmi.apps.googleusercontent.com",
-
               "client_type": 3
             }
           ]

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +36,8 @@ public class ListmusicFragment extends Fragment {
     private MusicAdapter musicAdapter;
 
     private ArrayList<Music> list;
+    private TextView tvNumberSong;
+    private  int count;
 
 
     @Nullable
@@ -45,9 +48,12 @@ public class ListmusicFragment extends Fragment {
         list = new ArrayList<>();
 
         getListMusic();
-        rcvMusic = mView.findViewById(R.id.rcv_music);
-        musicAdapter =new MusicAdapter(getContext(),list);
+        tvNumberSong = mView.findViewById(R.id.numberSong);
 
+
+        rcvMusic = mView.findViewById(R.id.rcv_music);
+
+        musicAdapter =new MusicAdapter(getContext(),list);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         rcvMusic.setLayoutManager(layoutManager);
@@ -64,40 +70,44 @@ public class ListmusicFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
 
-    private List<Music> getListMusic() {
+    private void getListMusic() {
 
 
-      DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/songs");
-
-
-    //   DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/song");
-
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference("music/song");
         database.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Music music=snapshot.getValue(Music.class);
-                if(music!=null){
-                    list.add(music);
-                }
-                musicAdapter.notifyDataSetChanged();
-            }
+                try {
+                    count++;
+//                    System.out.println(count);
+                    Music music=snapshot.getValue(Music.class);
+                    if(music!=null){
+                        list.add(music);
+                        tvNumberSong.setText(String.valueOf(count));
+                    }
+                    musicAdapter.notifyDataSetChanged();
 
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//                Music tmp=snapshot.getValue(Music.class);
-//                if(tmp ==null||list==null||list.isEmpty()){
-//                    return;
-//                }
-//                for (int i=0;i<list.size();i++){
-//                    //cai nay phai can id
-//                    if(tmp.getSongLink()==list.get(i).getSongLink()){
-//                        list.set(i,tmp);
-//                    }
-//                }
-//                musicAdapter.notifyDataSetChanged();
+                Music music=snapshot.getValue(Music.class);
+                if (music == null|| list == null || list.isEmpty()){
+                    return;
+                }
+                for (int i = 0; i < list.size(); i++){
+                    if(music.getSongID().equals(list.get(i).getSongID())){
+                        list.set(i,music);
+                    }
+                }
+                musicAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -114,33 +124,6 @@ public class ListmusicFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
-
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("music/songs");
-//        Query query = ref.orderByChild("authorName").equalTo("Hoàng Dũng");
-//
-//        ValueEventListener eventListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // Handle the retrieved data here
-//                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-//                    Music music = childSnapshot.getValue(Music.class);
-//                    if (music != null) {
-//                        list.add(music);
-//                    }
-//                    musicAdapter.notifyDataSetChanged();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                // Handle the error
-//                Log.e("loaddata", "Error retrieving data", databaseError.toException());
-//            }
-//        };
-//        query.addListenerForSingleValueEvent(eventListener);
-
-
-    }
+        });}
 
 }

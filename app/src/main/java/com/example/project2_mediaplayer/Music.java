@@ -3,16 +3,54 @@ package com.example.project2_mediaplayer;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Music implements Serializable {
     private String songimage;
     private int authorid;
-    private int songDuration;
     private String songTitle;
     private String authorName;
     private String songLink;
+    private int favorite;
+    private String songID;
+
+    public String getSongID() {
+        return songID;
+    }
+
+    public void setSongID(String songID) {
+        this.songID = songID;
+    }
+
+    public Music(String songimage, int authorid, String songTitle, String authorName, String songLink, int favorite, String songID) {
+        this.songimage = songimage;
+        this.authorid = authorid;
+        this.songTitle = songTitle;
+        this.authorName = authorName;
+        this.songLink = songLink;
+        this.favorite = favorite;
+        this.songID = songID;
+    }
 
     public Music() {
+    }
+
+    public Music(String songimage, int authorid, String songTitle, String authorName, String songLink, int favorite) {
+        this.songimage = songimage;
+        this.authorid = authorid;
+        this.songTitle = songTitle;
+        this.authorName = authorName;
+        this.songLink = songLink;
+        this.favorite = favorite;
+    }
+
+    public int getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(int favorite) {
+        this.favorite = favorite;
     }
 
     public Music(String songimage, String songTitle, String authorName) {
@@ -21,10 +59,9 @@ public class Music implements Serializable {
         this.authorName = authorName;
     }
 
-    public Music(String songimage, int authorid, int songDuration, String songTitle, String authorName, String songLink) {
+    public Music(String songimage, int authorid,  String songTitle, String authorName, String songLink) {
         this.songimage = songimage;
         this.authorid = authorid;
-        this.songDuration = songDuration;
         this.songTitle = songTitle;
         this.authorName = authorName;
         this.songLink = songLink;
@@ -36,14 +73,6 @@ public class Music implements Serializable {
 
     public void setAuthorid(int authorid) {
         this.authorid = authorid;
-    }
-
-    public int getSongDuration() {
-        return songDuration;
-    }
-
-    public void setSongDuration(int songDuration) {
-        this.songDuration = songDuration;
     }
 
     public String getSongLink() {
@@ -76,6 +105,13 @@ public class Music implements Serializable {
 
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
+    }
+
+    public Map<String, Object> toMap(){
+        HashMap<String,Object> result = new HashMap<>();
+        result.put("favorite", favorite);
+
+        return result;
     }
 
 

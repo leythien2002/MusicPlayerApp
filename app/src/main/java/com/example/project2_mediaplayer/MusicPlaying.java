@@ -100,7 +100,8 @@ public class MusicPlaying extends AppCompatActivity {
 //        setCurrentSong();
         music=listSong.get(currentIndex);
         mediaPlayer=MediaPlayer.create(this,Uri.parse(music.getSongLink()));
-
+        handleAction(MyService.ACTION_RESUME);
+        sendActionToService(MyService.ACTION_RESUME);
         mediaPlayer.setLooping(true);
         mediaPlayer.seekTo(0);
         String duration= millisecondsToString(mediaPlayer.getDuration());
