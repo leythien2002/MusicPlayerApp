@@ -32,6 +32,7 @@ public class MyService extends Service {
     public static final int ACTION_CLEAR = 3;
     public static final int ACTION_NEXT=5;
     public static final int ACTION_PREV=6;
+    public static final int ACTION_CHECK=7;
 
 
     private Context context;
@@ -56,6 +57,7 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle bundle = intent.getExtras();
+
         size= (int) intent.getExtras().get("sizeList");
         int action = intent.getIntExtra("action_music_service", 0);
         if (bundle != null) {
@@ -105,6 +107,7 @@ public class MyService extends Service {
                 sendActionToActivity(ACTION_PREV);
                 sendNotification(music);
                 break;
+
         }
     }
 
@@ -227,12 +230,14 @@ public class MyService extends Service {
     private void sendActionToActivity(int action){
         Intent i=new Intent("send_data");
         Bundle bundle=new Bundle();
+
         bundle.putInt("action",action);
         bundle.putInt("index",index);
         bundle.putBoolean("checkPlaying",isPlaying);
         i.putExtras(bundle);
         LocalBroadcastManager.getInstance(this).sendBroadcast(i);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

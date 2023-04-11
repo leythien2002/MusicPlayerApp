@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -36,15 +37,17 @@ public class MusicPlaying extends AppCompatActivity {
     private SeekBar seekBar;
     private CircleImageView circleImageView;
     private TextView tvMusicName,tvAuthor,tvTimeTotal,tvTimeRun;
-    private MediaPlayer mediaPlayer;
+    static public MediaPlayer mediaPlayer;
     private Animation animation;
     private Music music;
-    private boolean isPlaying;
+    private boolean isPlaying,isLoop,isRandom;
     //prev and next btn
     private ArrayList<Music> listSong;
     private int currentIndex;
     private Thread thread;
     private Runnable runnable;
+    private Random rand=new Random();
+
 
     //get Broadcast receiver. Cai nay dung de giao tiep giua activity va forceground
     private BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
@@ -80,7 +83,9 @@ public class MusicPlaying extends AppCompatActivity {
         btnPlay=findViewById(R.id.imageButtonplaypause);
         btnNext=findViewById(R.id.imageButtonnext);
         btnPrevious=findViewById(R.id.imageButtonprevious);
-//        btnPause=findViewById(R.id.btnPause);
+        btnRepeat=findViewById(R.id.imageButtonlap);
+        btnRandom=findViewById(R.id.imageButtontron);
+
         tvMusicName=findViewById(R.id.textViewtenbaihatplaynhac);
         tvAuthor=findViewById(R.id.textViewtencasiplaynhac);
         tvTimeRun=findViewById(R.id.textViewruntime);
@@ -90,20 +95,42 @@ public class MusicPlaying extends AppCompatActivity {
         //animation for circle
         animation= AnimationUtils.loadAnimation(this,R.anim.rotation);
         //get bundle
+        //create media
         Bundle bundle=getIntent().getExtras();
         if(bundle==null){
             return;
         }
-//        music= (Music) bundle.get("MusicObject");
         currentIndex= (int) bundle.get("index");
         listSong=(ArrayList) bundle.getParcelableArrayList("ListSong");
-//        setCurrentSong();
+
         music=listSong.get(currentIndex);
         mediaPlayer=MediaPlayer.create(this,Uri.parse(music.getSongLink()));
         handleAction(MyService.ACTION_RESUME);
         sendActionToService(MyService.ACTION_RESUME);
-        mediaPlayer.setLooping(true);
+
         mediaPlayer.seekTo(0);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                if(isRandom){
+                    //neu size la 50 thi no se random tu 0-49
+                    currentIndex=rand.nextInt(listSong.size());
+                    music=listSong.get(currentIndex);
+                    sendActionToService(MyService.ACTION_NEXT);
+                }
+                else{
+                    if(currentIndex<listSong.size()-1){
+                        currentIndex++;
+                        music=listSong.get(currentIndex);
+                        sendActionToService(MyService.ACTION_NEXT);
+                    }
+                    else{
+                        sendActionToService(MyService.ACTION_PAUSE);
+                    }
+                }
+
+            }
+        });
         String duration= millisecondsToString(mediaPlayer.getDuration());
         tvTimeTotal.setText(duration);
         seekBar.setMax(mediaPlayer.getDuration());
@@ -118,7 +145,9 @@ public class MusicPlaying extends AppCompatActivity {
         setRunnableForThread();
 
 
+
     }
+
     private void initListener(){
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
@@ -144,15 +173,19 @@ public class MusicPlaying extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(currentIndex<listSong.size()-1){
-                    currentIndex++;
+                if(isRandom){
+                    //neu size la 50 thi no se random tu 0-49
+                    currentIndex=rand.nextInt(listSong.size());
                     music=listSong.get(currentIndex);
                     sendActionToService(MyService.ACTION_NEXT);
                 }
-
-//                handleAction(MyService.ACTION_NEXT);
-
-
+                else{
+                    if(currentIndex<listSong.size()-1){
+                        currentIndex++;
+                        music=listSong.get(currentIndex);
+                        sendActionToService(MyService.ACTION_NEXT);
+                    }
+                }
             }
         });
         btnPrevious.setOnClickListener(new View.OnClickListener() {
@@ -163,6 +196,31 @@ public class MusicPlaying extends AppCompatActivity {
                 }
                 music=listSong.get(currentIndex);
                 sendActionToService(MyService.ACTION_PREV);
+            }
+        });
+        btnRepeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isLoop){
+                    mediaPlayer.setLooping(false);
+                    isLoop=false;
+                }
+                else{
+                    mediaPlayer.setLooping(true);
+                    isLoop=true;
+                }
+
+            }
+        });
+        btnRandom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isRandom){
+                    isRandom=false;
+                }
+                else{
+                    isRandom=true;
+                }
             }
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -194,6 +252,7 @@ public class MusicPlaying extends AppCompatActivity {
 
     private void clickStopService() {
     }
+
     private void handleAction(int action) {
         switch (action){
             //nen co 1 case nua de set layout visibility cho layout nho? khi play
@@ -213,7 +272,7 @@ public class MusicPlaying extends AppCompatActivity {
                     mediaPlayer=null;
                     thread.interrupt();
                 }
-
+                MainActivity.layoutMusic.setVisibility(View.GONE);
 
                 Intent i =new Intent(this,MainActivity.class);
                 startActivity(i);
@@ -230,15 +289,18 @@ public class MusicPlaying extends AppCompatActivity {
                 isPlaying=true;
                 setCurrentSong();
                 setRunnableForThread();
+                sendSongToMain(currentIndex,music);
+
                 break;
             case MyService.ACTION_PREV:
 
 //                thread.interrupt();
                 isPlaying=true;
-
                 setCurrentSong();
                 setRunnableForThread();
+                sendSongToMain(currentIndex,music);
                 break;
+
 
 
         }
@@ -254,6 +316,14 @@ public class MusicPlaying extends AppCompatActivity {
         i.putExtra("action_music_service",action);//cai nay licen quan toi receiver .
         startService(i);
     }
+    private void sendSongToMain(int index,Music music){
+        Intent i=new Intent("send_song");
+        Bundle bundle=new Bundle();
+        bundle.putInt("index",index);
+        bundle.putSerializable("MusicObject",music);
+        i.putExtras(bundle);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+    }
     private void stopService(){
         Intent i=new Intent(this,MyService.class);
         stopService(i);
@@ -267,14 +337,36 @@ public class MusicPlaying extends AppCompatActivity {
             mediaPlayer=null;
         }
         mediaPlayer=MediaPlayer.create(this,Uri.parse(music.getSongLink()));
+        String duration= millisecondsToString(mediaPlayer.getDuration());
+        tvTimeTotal.setText(duration);
 
-        mediaPlayer.setLooping(true);
         mediaPlayer.seekTo(0);
         //sua loi E/MediaPlayer: error (-38, 0)
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
                 mediaPlayer.start();
+            }
+        });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                if(isRandom){
+                    //neu size la 50 thi no se random tu 0-49
+                    currentIndex=rand.nextInt(listSong.size());
+                    music=listSong.get(currentIndex);
+                    sendActionToService(MyService.ACTION_NEXT);
+                }
+                else{
+                    if(currentIndex<listSong.size()-1){
+                        currentIndex++;
+                        music=listSong.get(currentIndex);
+                        sendActionToService(MyService.ACTION_NEXT);
+                    }
+                    else{
+                        sendActionToService(MyService.ACTION_PAUSE);
+                    }
+                }
             }
         });
 
@@ -310,6 +402,7 @@ public class MusicPlaying extends AppCompatActivity {
                         }catch (Exception e){
 
                         }
+
                     }
 
 
