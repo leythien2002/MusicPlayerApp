@@ -6,7 +6,7 @@
             android:color="#FF9800">
             <item android:id="@android:id/mask">
                 <shape android:shape="rectangle">
-                    <corners android:radius="4dp"/>
+                    <corners android:radius="100dp"/>
                     <solid android:color="@color/button"/>
                 </shape>
                 <color android:color="@color/button"/>
@@ -15,8 +15,8 @@
     </item>
     <item>
         <shape android:shape="rectangle">
-            <corners android:radius="4dp"/>
-            <solid android:color="#444444"/>
+            <corners android:radius="100dp"/>
+            <solid android:color="@color/title"/>
         </shape>
     </item>
 </ripple>

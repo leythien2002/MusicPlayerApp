@@ -6,20 +6,17 @@ public class Author implements Serializable {
 
     private String authorname;
     private int authorid;
-    private String authorimage1;
-
-    private String authorimage2;
+    private String authorimage;
 
 
 
     public Author() {
     }
 
-    public Author(String authorname, int authorid, String authorimage1, String authorimage2) {
+    public Author(String authorname, int authorid, String authorimage) {
         this.authorname = authorname;
         this.authorid = authorid;
-        this.authorimage1 = authorimage1;
-        this.authorimage2 = authorimage2;
+        this.authorimage = authorimage;
     }
 
     public String getAuthorname() {
@@ -38,19 +35,13 @@ public class Author implements Serializable {
         this.authorid = authorid;
     }
 
-    public String getAuthorimage1() {
-        return authorimage1;
+    public String getAuthorimage() {
+        return authorimage;
     }
 
-    public void setAuthorimage1(String authorimage1) {
-        this.authorimage1 = authorimage1;
+    public void setAuthorimage(String authorimage) {
+        this.authorimage = authorimage;
     }
 
-    public String getAuthorimage2() {
-        return authorimage2;
-    }
 
-    public void setAuthorimage2(String authorimage2) {
-        this.authorimage2 = authorimage2;
-    }
 }

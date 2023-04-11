@@ -63,7 +63,7 @@ public class ListMusicByAuthor extends AppCompatActivity {
                 author_selected= (Author) bundle.get("AuthorObject");
                 String name_author_selected = author_selected.getAuthorname();
                 author_name.setText(name_author_selected);
-                Picasso.with(this).load(author_selected.getAuthorimage2()).into(this.img_author);
+                Picasso.with(this).load(author_selected.getAuthorimage()).into(this.img_author);
 
             }
         list = new ArrayList<>();
@@ -82,10 +82,7 @@ public class ListMusicByAuthor extends AppCompatActivity {
         }
 
     private List<Music> getListMusic() {
-
-
-
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("music/songs");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("music/song");
         Query query = ref.orderByChild("authorName").equalTo(author_selected.getAuthorname());
 
         ValueEventListener eventListener = new ValueEventListener() {
@@ -96,6 +93,7 @@ public class ListMusicByAuthor extends AppCompatActivity {
                     Music music = childSnapshot.getValue(Music.class);
                     if (music != null) {
                         list.add(music);
+                        System.out.println(music.getSongTitle());
                     }
                     musicAdapter.notifyDataSetChanged();
                 }
