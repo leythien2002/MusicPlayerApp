@@ -184,25 +184,7 @@ public class MyService extends Service {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                if(MusicPlaying.isRandom){
-                    //neu size la 50 thi no se random tu 0-49
-                    currentIndex=rand.nextInt(MusicAdapter.mListmusic.size());
-                    changeNewMusic();
-                    sendActionToActivity(MyService.ACTION_NEXT);
-                    sendNotification(music);
-                }
-                else{
-                    if(currentIndex<MusicAdapter.mListmusic.size()-1){
-                        currentIndex++;
-                        changeNewMusic();
-                        sendActionToActivity(MyService.ACTION_NEXT);
-                        sendNotification(music);
-                    }
-                    else{
-                        Toast.makeText(context, "Het Nhac Roi", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
+                nextMusic();
             }
         });
     }
