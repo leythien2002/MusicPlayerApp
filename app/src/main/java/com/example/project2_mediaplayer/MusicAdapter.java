@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DatabaseError;
@@ -26,7 +27,8 @@ import java.util.List;
 
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHolder> {
     private Context context;
-    private ArrayList<Music> mListmusic;
+    static public ArrayList<Music> mListmusic;
+
     private int favorite;
     private DatabaseReference mDatabase;
 
@@ -72,8 +74,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startPlaying(music,index);
+//                startPlaying(music,index);
+                sendSongToMain(index,music);
             }
+
         });
         holder.constraintLayout.findViewById(R.id.favorite).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,12 +119,30 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
         Intent i=new Intent(context,MusicPlaying.class);
         Bundle bundle=new Bundle();
-        bundle.putSerializable("MusicObject",music);
+//        bundle.putSerializable("MusicObject",music);
         bundle.putInt("index",index);
+        bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
+        //send check to Service (ktra xem no co dang chay bai nao khong)
+//        Intent check=new Intent(context,MyService.class);
+//        Bundle bundleCheck=new Bundle();
+//        bundleCheck.putBoolean("checkPlay",true);
+//        check.putExtras(bundleCheck);
+//        context.startService(check);
+
+
+        i.putExtras(bundle);
+
+        context.startActivity(i);
+    }
+    private void sendSongToMain(int index,Music music){
+        Intent i=new Intent("send_song");
+        Bundle bundle=new Bundle();
+        bundle.putInt("index",index);
+        bundle.putSerializable("MusicObject",music);
         bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
 
         i.putExtras(bundle);
-        context.startActivity(i);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(i);
     }
 
 
