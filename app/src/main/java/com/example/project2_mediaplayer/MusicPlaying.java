@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -37,15 +38,15 @@ public class MusicPlaying extends AppCompatActivity {
     private SeekBar seekBar;
     private CircleImageView circleImageView;
     private TextView tvMusicName,tvAuthor,tvTimeTotal,tvTimeRun;
-    static public MediaPlayer mediaPlayer;
+//    static public MediaPlayer mediaPlayer;
     private Animation animation;
     private Music music;
-    private boolean isPlaying,isLoop,isRandom;
+    private boolean isPlaying,isLoop;
+    static boolean isRandom=false;
     //prev and next btn
     private ArrayList<Music> listSong;
     private int currentIndex;
-    private Thread thread;
-    private Runnable runnable;
+
     private Random rand=new Random();
 
 
@@ -58,8 +59,10 @@ public class MusicPlaying extends AppCompatActivity {
                 return;
             }
             else{
-                int action= (int) bundle.get("action");
+                music= (Music) bundle.get("object_music");
                 currentIndex= (int) bundle.get("index");
+                MainActivity.indexMain=currentIndex;
+                int action= (int) bundle.get("action");
                 isPlaying= (boolean) bundle.get("checkPlaying");
                 handleAction(action);
             }
@@ -100,49 +103,54 @@ public class MusicPlaying extends AppCompatActivity {
         if(bundle==null){
             return;
         }
+        music= (Music) bundle.getSerializable("object_music");
         currentIndex= (int) bundle.get("index");
-        listSong=(ArrayList) bundle.getParcelableArrayList("ListSong");
-
-        music=listSong.get(currentIndex);
-        mediaPlayer=MediaPlayer.create(this,Uri.parse(music.getSongLink()));
+        MainActivity.indexMain=currentIndex;
         handleAction(MyService.ACTION_RESUME);
-        sendActionToService(MyService.ACTION_RESUME);
-
-        mediaPlayer.seekTo(0);
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                if(isRandom){
-                    //neu size la 50 thi no se random tu 0-49
-                    currentIndex=rand.nextInt(listSong.size());
-                    music=listSong.get(currentIndex);
-                    sendActionToService(MyService.ACTION_NEXT);
-                }
-                else{
-                    if(currentIndex<listSong.size()-1){
-                        currentIndex++;
-                        music=listSong.get(currentIndex);
-                        sendActionToService(MyService.ACTION_NEXT);
-                    }
-                    else{
-                        sendActionToService(MyService.ACTION_PAUSE);
-                    }
-                }
-
-            }
-        });
-        String duration= millisecondsToString(mediaPlayer.getDuration());
-        tvTimeTotal.setText(duration);
-        seekBar.setMax(mediaPlayer.getDuration());
-
-
-        tvMusicName.setText(music.getSongTitle());
-        tvAuthor.setText(music.getAuthorName());
-        //set Image for ImageView (disk play)
-
-        Picasso.with(this).load(music.getSongimage()).into(circleImageView);
-        //control music
-        setRunnableForThread();
+        setRunnableMusic();
+//        currentIndex= (int) bundle.get("index");
+//        listSong=(ArrayList) bundle.getParcelableArrayList("ListSong");
+//
+//        music=listSong.get(currentIndex);
+//        mediaPlayer=MediaPlayer.create(this,Uri.parse(music.getSongLink()));
+//        handleAction(MyService.ACTION_RESUME);
+//        sendActionToService(MyService.ACTION_RESUME);
+//
+//        mediaPlayer.seekTo(0);
+//        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            @Override
+//            public void onCompletion(MediaPlayer mediaPlayer) {
+//                if(isRandom){
+//                    //neu size la 50 thi no se random tu 0-49
+//                    currentIndex=rand.nextInt(listSong.size());
+//                    music=listSong.get(currentIndex);
+//                    sendActionToService(MyService.ACTION_NEXT);
+//                }
+//                else{
+//                    if(currentIndex<listSong.size()-1){
+//                        currentIndex++;
+//                        music=listSong.get(currentIndex);
+//                        sendActionToService(MyService.ACTION_NEXT);
+//                    }
+//                    else{
+//                        sendActionToService(MyService.ACTION_PAUSE);
+//                    }
+//                }
+//
+//            }
+//        });
+//        String duration= millisecondsToString(mediaPlayer.getDuration());
+//        tvTimeTotal.setText(duration);
+//        seekBar.setMax(mediaPlayer.getDuration());
+//
+//
+//        tvMusicName.setText(music.getSongTitle());
+//        tvAuthor.setText(music.getAuthorName());
+//        //set Image for ImageView (disk play)
+//
+//        Picasso.with(this).load(music.getSongimage()).into(circleImageView);
+//        //control music
+//        setRunnableForThread();
 
 
 
@@ -173,28 +181,17 @@ public class MusicPlaying extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isRandom){
-                    //neu size la 50 thi no se random tu 0-49
-                    currentIndex=rand.nextInt(listSong.size());
-                    music=listSong.get(currentIndex);
-                    sendActionToService(MyService.ACTION_NEXT);
-                }
-                else{
-                    if(currentIndex<listSong.size()-1){
-                        currentIndex++;
-                        music=listSong.get(currentIndex);
-                        sendActionToService(MyService.ACTION_NEXT);
-                    }
-                }
+
+
+                sendActionToService(MyService.ACTION_NEXT);
+
+
             }
         });
         btnPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(currentIndex>0){
-                    currentIndex--;
-                }
-                music=listSong.get(currentIndex);
+
                 sendActionToService(MyService.ACTION_PREV);
             }
         });
@@ -202,11 +199,11 @@ public class MusicPlaying extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(isLoop){
-                    mediaPlayer.setLooping(false);
+                    MyService.mediaPlayer.setLooping(false);
                     isLoop=false;
                 }
                 else{
-                    mediaPlayer.setLooping(true);
+                    MyService.mediaPlayer.setLooping(true);
                     isLoop=true;
                 }
 
@@ -227,8 +224,8 @@ public class MusicPlaying extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean isFromUser) {
                 if(isFromUser){
-                    mediaPlayer.seekTo(progress);
-                    seekBar.setProgress(progress);
+                    MyService.mediaPlayer.seekTo(progress);
+                    seekBar.setProgress((int)MyService.mediaPlayer.getCurrentPosition());
                 }
 
             }
@@ -244,7 +241,7 @@ public class MusicPlaying extends AppCompatActivity {
             }
         });
         //AsyncTask ?
-        setRunnableForThread();
+//        setRunnableForThread();
 
 
     }
@@ -256,71 +253,92 @@ public class MusicPlaying extends AppCompatActivity {
     private void handleAction(int action) {
         switch (action){
             //nen co 1 case nua de set layout visibility cho layout nho? khi play
+
             case MyService.ACTION_PAUSE:
-                mediaPlayer.pause();
+                showInfoMusic();
                 btnPlay.setImageResource(R.drawable.ic_play_white);
                 circleImageView.clearAnimation();
                 isPlaying=false;
+                sendSongToMain();
                 break;
             case MyService.ACTION_CLEAR: //cai nut tat
                 isPlaying=false;
                 LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
                 stopService();
-                if(mediaPlayer!=null){
-                    mediaPlayer.reset();
-                    mediaPlayer.release();
-                    mediaPlayer=null;
-                    thread.interrupt();
-                }
                 MainActivity.layoutMusic.setVisibility(View.GONE);
-
                 Intent i =new Intent(this,MainActivity.class);
                 startActivity(i);
                 break;
             case MyService.ACTION_RESUME:
-                mediaPlayer.start();
+                showInfoMusic();
                 btnPlay.setImageResource(R.drawable.pause);
                 circleImageView.startAnimation(animation);
                 isPlaying=true;
+                sendSongToMain();
                 break;
             case MyService.ACTION_NEXT:
                 //chi can interrupt no roi gan runnable moi :v ez
-//                thread.interrupt();
-                isPlaying=true;
-                setCurrentSong();
-                setRunnableForThread();
-                sendSongToMain(currentIndex,music);
-
+                showInfoMusic();
+                sendSongToMain();
                 break;
             case MyService.ACTION_PREV:
-
-//                thread.interrupt();
-                isPlaying=true;
-                setCurrentSong();
-                setRunnableForThread();
-                sendSongToMain(currentIndex,music);
+                showInfoMusic();
+                sendSongToMain();
                 break;
 
 
 
         }
     }
+    private void showInfoMusic(){
+        tvMusicName.setText(music.getSongTitle());
+        tvAuthor.setText(music.getAuthorName());
+//        //set Image for ImageView (disk play)
+//
+        Picasso.with(this).load(music.getSongimage()).into(circleImageView);
+        String duration= millisecondsToString(MyService.mediaPlayer.getDuration());
+        tvTimeTotal.setText(duration);
+        if(MyService.mediaPlayer!=null){
+            seekBar.setProgress(MyService.mediaPlayer.getCurrentPosition());
+            seekBar.setMax(MyService.mediaPlayer.getDuration());
+        }
+        //set durration
+        final double current=MyService.mediaPlayer.getCurrentPosition();
+        final String time= millisecondsToString((int)current);
+        tvTimeRun.setText(time);
+        seekBar.setProgress((int)current);
+
+
+    }
+    private void setRunnableMusic(){
+        final Handler handler=new Handler();
+        MusicPlaying.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(MyService.mediaPlayer!=null){
+                    showInfoMusic();
+                }
+                handler.postDelayed(this, 1000);
+            }
+
+        });
+    }
     private void sendActionToService(int action){
         Intent i=new Intent(this,MyService.class);
         Bundle bundle=new Bundle();
-        bundle.putSerializable("song",music);
+        bundle.putSerializable("object_music",music);
         bundle.putInt("index",currentIndex);
         bundle.putBoolean("checkPlay",isPlaying);
-        bundle.putInt("sizeList",listSong.size());
+//        bundle.putInt("sizeList",listSong.size());
         i.putExtras(bundle);
         i.putExtra("action_music_service",action);//cai nay licen quan toi receiver .
         startService(i);
     }
-    private void sendSongToMain(int index,Music music){
-        Intent i=new Intent("send_song");
+    private void sendSongToMain(){
+        Intent i=new Intent("send_signal");
         Bundle bundle=new Bundle();
-        bundle.putInt("index",index);
-        bundle.putSerializable("MusicObject",music);
+        bundle.putBoolean("checkChange",true);
+        bundle.putBoolean("isPlaying",isPlaying);
         i.putExtras(bundle);
         LocalBroadcastManager.getInstance(this).sendBroadcast(i);
     }
@@ -328,90 +346,90 @@ public class MusicPlaying extends AppCompatActivity {
         Intent i=new Intent(this,MyService.class);
         stopService(i);
     }
-    private void setCurrentSong(){
-
-        music=listSong.get(currentIndex);
-        if(mediaPlayer!=null){
-            mediaPlayer.reset();
-            mediaPlayer.release();
-            mediaPlayer=null;
-        }
-        mediaPlayer=MediaPlayer.create(this,Uri.parse(music.getSongLink()));
-        String duration= millisecondsToString(mediaPlayer.getDuration());
-        tvTimeTotal.setText(duration);
-
-        mediaPlayer.seekTo(0);
-        //sua loi E/MediaPlayer: error (-38, 0)
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                mediaPlayer.start();
-            }
-        });
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                if(isRandom){
-                    //neu size la 50 thi no se random tu 0-49
-                    currentIndex=rand.nextInt(listSong.size());
-                    music=listSong.get(currentIndex);
-                    sendActionToService(MyService.ACTION_NEXT);
-                }
-                else{
-                    if(currentIndex<listSong.size()-1){
-                        currentIndex++;
-                        music=listSong.get(currentIndex);
-                        sendActionToService(MyService.ACTION_NEXT);
-                    }
-                    else{
-                        sendActionToService(MyService.ACTION_PAUSE);
-                    }
-                }
-            }
-        });
-
+//    private void setCurrentSong(){
+//
+//        music=listSong.get(currentIndex);
+//        if(mediaPlayer!=null){
+//            mediaPlayer.reset();
+//            mediaPlayer.release();
+//            mediaPlayer=null;
+//        }
+//        mediaPlayer=MediaPlayer.create(this,Uri.parse(music.getSongLink()));
 //        String duration= millisecondsToString(mediaPlayer.getDuration());
 //        tvTimeTotal.setText(duration);
-        seekBar.setMax(mediaPlayer.getDuration());
-
-        tvMusicName.setText(music.getSongTitle());
-        tvAuthor.setText(music.getAuthorName());
-
-        Picasso.with(this).load(music.getSongimage()).into(circleImageView);
-
-
-    }
-    private void setRunnableForThread(){
-        runnable=new Runnable() {
-            @Override
-            public void run() {
-                while(mediaPlayer!=null){
-                    if(mediaPlayer.isPlaying()){
-                        try{
-                            final double current=mediaPlayer.getCurrentPosition();
-                            final String time= millisecondsToString((int)current);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    tvTimeRun.setText(time);
-                                    seekBar.setProgress((int)current);
-                                }
-                            });
-                            Thread.sleep(500);
-
-                        }catch (Exception e){
-
-                        }
-
-                    }
-
-
-                }
-            }
-        };
-        thread=new Thread(runnable);
-        thread.start();
-    }
+//
+//        mediaPlayer.seekTo(0);
+//        //sua loi E/MediaPlayer: error (-38, 0)
+//        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//            @Override
+//            public void onPrepared(MediaPlayer mediaPlayer) {
+//                mediaPlayer.start();
+//            }
+//        });
+//        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            @Override
+//            public void onCompletion(MediaPlayer mediaPlayer) {
+//                if(isRandom){
+//                    //neu size la 50 thi no se random tu 0-49
+//                    currentIndex=rand.nextInt(listSong.size());
+//                    music=listSong.get(currentIndex);
+//                    sendActionToService(MyService.ACTION_NEXT);
+//                }
+//                else{
+//                    if(currentIndex<listSong.size()-1){
+//                        currentIndex++;
+//                        music=listSong.get(currentIndex);
+//                        sendActionToService(MyService.ACTION_NEXT);
+//                    }
+//                    else{
+//                        sendActionToService(MyService.ACTION_PAUSE);
+//                    }
+//                }
+//            }
+//        });
+//
+////        String duration= millisecondsToString(mediaPlayer.getDuration());
+////        tvTimeTotal.setText(duration);
+//        seekBar.setMax(mediaPlayer.getDuration());
+//
+//        tvMusicName.setText(music.getSongTitle());
+//        tvAuthor.setText(music.getAuthorName());
+//
+//        Picasso.with(this).load(music.getSongimage()).into(circleImageView);
+//
+//
+//    }
+//    private void setRunnableForThread(){
+//        runnable=new Runnable() {
+//            @Override
+//            public void run() {
+//                while(mediaPlayer!=null){
+//                    if(mediaPlayer.isPlaying()){
+//                        try{
+//                            final double current=mediaPlayer.getCurrentPosition();
+//                            final String time= millisecondsToString((int)current);
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    tvTimeRun.setText(time);
+//                                    seekBar.setProgress((int)current);
+//                                }
+//                            });
+//                            Thread.sleep(500);
+//
+//                        }catch (Exception e){
+//
+//                        }
+//
+//                    }
+//
+//
+//                }
+//            }
+//        };
+//        thread=new Thread(runnable);
+//        thread.start();
+//    }
     private String millisecondsToString(int time){
         String elapsedTime="";
         int minutes=time/1000/60;
