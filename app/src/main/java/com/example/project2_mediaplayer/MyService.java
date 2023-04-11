@@ -12,10 +12,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -26,6 +28,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 public class MyService extends Service {
     public static final int ACTION_PAUSE = 1;
     public static final int ACTION_RESUME = 2;
@@ -33,14 +38,17 @@ public class MyService extends Service {
     public static final int ACTION_NEXT=5;
     public static final int ACTION_PREV=6;
     public static final int ACTION_CHECK=7;
+    public static final int ACTION_START=8;
 
 
     private Context context;
 
+    static public MediaPlayer mediaPlayer;
+    private ArrayList<Music> listSong;
     private Music music;
     private boolean isPlaying;
-    private int index,size;
-
+    private int currentIndex,size;
+    private Random rand=new Random();
 
 
     @Override
@@ -58,33 +66,36 @@ public class MyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle bundle = intent.getExtras();
 
-        size= (int) intent.getExtras().get("sizeList");
+//        size= (int) intent.getExtras().get("sizeList");
         int action = intent.getIntExtra("action_music_service", 0);
         if (bundle != null) {
-            music = (Music) bundle.get("song");
-            if (music != null) {
-//                startMusic(music);
-                if(action!=ACTION_CLEAR){
-                    isPlaying= (boolean) bundle.get("checkPlay");
-                    index= (int) bundle.get("index");
-                    sendNotification(music);
-                }
+            music = (Music) bundle.get("object_music");
+            if(action!=ACTION_CLEAR){
+                currentIndex= (int) bundle.get("index");
+                if (music != null) {
+                    startMusic(music);
 
+//                   isPlaying= (boolean) bundle.get("checkPlay");
+                    sendNotification(music);
+
+                }
             }
+
         }
         handleActionMusic(action);
-
+        onCompleteMusic();
         return START_NOT_STICKY;
     }
 
-    //    private void startMusic(Music music) {
-//        if (mediaPlayer == null) {
-//            mediaPlayer = MediaPlayer.create(getApplicationContext(), music.getResource());
-//        }
-//        mediaPlayer.start();
-//        isPlaying=true;
-//
-//    }
+        private void startMusic(Music music) {
+        if (mediaPlayer == null) {
+            mediaPlayer=MediaPlayer.create(this, Uri.parse(music.getSongLink()));
+        }
+        mediaPlayer.start();
+        isPlaying=true;
+        sendActionToActivity(ACTION_RESUME);
+
+    }
     private void handleActionMusic(int action) {
         switch (action) {
             case ACTION_PAUSE:
@@ -98,23 +109,19 @@ public class MyService extends Service {
                 sendActionToActivity(ACTION_CLEAR);
                 break;
             case ACTION_NEXT:
-                isPlaying=true;
-                sendActionToActivity(ACTION_NEXT);
-                sendNotification(music);
+                nextMusic();
                 break;
             case ACTION_PREV:
-                isPlaying=true;
-                sendActionToActivity(ACTION_PREV);
-                sendNotification(music);
+                prevMusic();
                 break;
 
         }
     }
 
     private void pauseMusic() {
-//        if(mediaPlayer!=null&&isPlaying){
-        if (isPlaying) {
-//            mediaPlayer.pause();
+        if(mediaPlayer!=null&&isPlaying){
+//        if (isPlaying) {
+            mediaPlayer.pause();
             isPlaying = false;
             sendActionToActivity(ACTION_PAUSE);
             sendNotification(music);
@@ -130,16 +137,66 @@ public class MyService extends Service {
             sendNotification(music);
         }
     }
+    private void nextMusic(){
+        if(mediaPlayer!=null){
+            stopCurrentMusic();
+            if(MusicPlaying.isRandom){
+                currentIndex=rand.nextInt(MusicAdapter.mListmusic.size());
+
+            }
+            else {
+                if(currentIndex<MusicAdapter.mListmusic.size()-1){
+                    currentIndex++;
+                }
+            }
+
+            changeNewMusic();
+            mediaPlayer.start();
+            sendActionToActivity(ACTION_NEXT);
+            sendNotification(music);
+        }
+
+    }
+    private void prevMusic(){
+        if(mediaPlayer!=null){
+            stopCurrentMusic();
+            if(currentIndex>0){
+                currentIndex--;
+            }
+            changeNewMusic();
+            mediaPlayer.start();
+            sendActionToActivity(ACTION_PREV);
+            sendNotification(music);
+        }
+    }
+    private void stopCurrentMusic(){
+        mediaPlayer.stop();
+        mediaPlayer.release();
+        mediaPlayer=null;
+    }
+    private void changeNewMusic(){
+        music=MusicAdapter.mListmusic.get(currentIndex);
+        if (mediaPlayer == null) {
+            mediaPlayer=MediaPlayer.create(this, Uri.parse(music.getSongLink()));
+        }
+    }
+    private void onCompleteMusic(){
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                nextMusic();
+            }
+        });
+    }
 
     private PendingIntent getPendingIntent(Context context, int action) {
         Intent i = new Intent(this, Receiver.class);
 
         i.putExtra("action_music", action);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("song", music);
+        bundle.putSerializable("object_music", music);
         bundle.putBoolean("checkPlay",isPlaying);
-        bundle.putInt("index",index);
-        bundle.putInt("sizeList",size);
+        bundle.putInt("index",currentIndex);
         i.putExtras(bundle);
         return PendingIntent.getBroadcast(context.getApplicationContext(), action, i, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -230,9 +287,9 @@ public class MyService extends Service {
     private void sendActionToActivity(int action){
         Intent i=new Intent("send_data");
         Bundle bundle=new Bundle();
-
+        bundle.putSerializable("object_music", music);
         bundle.putInt("action",action);
-        bundle.putInt("index",index);
+        bundle.putInt("index",currentIndex);
         bundle.putBoolean("checkPlaying",isPlaying);
         i.putExtras(bundle);
         LocalBroadcastManager.getInstance(this).sendBroadcast(i);

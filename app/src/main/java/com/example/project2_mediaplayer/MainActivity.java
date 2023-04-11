@@ -44,8 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imgMusic;
     private TextView tvTitleSong,tvAuthorSong;
     private ImageButton btnStart,btnPrev,btnNext;
-    private int index;
-    static public ArrayList<Music> mListmusic;
+    static public int indexMain;
     private BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -54,24 +53,22 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             else{
-
-                music= (Music) bundle.get("MusicObject");
-//                isPlaying= (boolean) bundle.get("checkPlaying");
-                index= (int) bundle.get("index");
-                layoutMusic.setVisibility(View.VISIBLE);
-                showInfo();
-                startPlaying(music,index);
-
+                Boolean check= (Boolean) bundle.get("checkChange");
+                isPlaying= (boolean) bundle.get("isPlaying");
+                if(check){
+                    controlBottomLayout();
+                }
             }
 
         }
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mListmusic=MusicAdapter.mListmusic;
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,new IntentFilter("send_song"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,new IntentFilter("send_signal"));
+
         initUi();
 
         mViewpager2 = findViewById(R.id.view_pager_2);
@@ -124,21 +121,54 @@ public class MainActivity extends AppCompatActivity {
         tvAuthorSong=layoutMusic.findViewById(R.id.tvAuthorSong);
         tvTitleSong=layoutMusic.findViewById(R.id.tvTitleSong);
         btnStart=layoutMusic.findViewById(R.id.button_toggle_play_pause);
+        btnNext=layoutMusic.findViewById(R.id.button_next);
+        btnPrev=layoutMusic.findViewById(R.id.button_prev);
         //getSongfromAdapter
         layoutMusic.setVisibility(View.GONE);
+
         layoutMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startPlaying(music,index);
+                startPlaying(music,indexMain);
+            }
+        });
+        btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isPlaying){
+                    sendActionToService(MyService.ACTION_PAUSE);
+                }
+                else{
+                    sendActionToService(MyService.ACTION_RESUME);
+                }
+            }
+        });
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendActionToService(MyService.ACTION_NEXT);
+            }
+        });
+        btnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendActionToService(MyService.ACTION_PREV);
             }
         });
 
 
-
-
+    }
+    private void controlBottomLayout(){
+        if(MyService.mediaPlayer!=null){
+            music=MusicAdapter.mListmusic.get(indexMain);
+            layoutMusic.setVisibility(View.VISIBLE);
+            showInfo();
+        }
+        else {
+            layoutMusic.setVisibility(View.GONE);
+        }
     }
     private void showInfo(){
-
         if(music==null){
             return;
         }
@@ -156,19 +186,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startPlaying(Music music, int index) {
-        mListmusic=MusicAdapter.mListmusic;
-        if( MusicPlaying.mediaPlayer!=null){
-            MusicPlaying.mediaPlayer.reset();
-            MusicPlaying.mediaPlayer.release();
-            MusicPlaying.mediaPlayer=null;
-        }
+
         Intent i=new Intent(this,MusicPlaying.class);
         Bundle bundle=new Bundle();
         bundle.putInt("index",index);
-        bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
+        bundle.putSerializable("object_music",music);
+        bundle.putBoolean("isPlaying",isPlaying);
 
         i.putExtras(bundle);
-        this.startActivity(i);
+        startActivity(i);
+    }
+    private void sendActionToService(int action){
+        Intent i=new Intent(this,MyService.class);
+        Bundle bundle=new Bundle();
+        bundle.putSerializable("object_music",music);
+        bundle.putInt("index",indexMain);
+        bundle.putBoolean("checkPlay",isPlaying);
+//        bundle.putInt("sizeList",listSong.size());
+        i.putExtras(bundle);
+        i.putExtra("action_music_service",action);//cai nay licen quan toi receiver .
+        startService(i);
     }
 
     //checkpermission granted ?

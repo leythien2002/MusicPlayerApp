@@ -74,8 +74,12 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                startPlaying(music,index);
-                sendSongToMain(index,music);
+                if(MyService.mediaPlayer != null){
+                    MyService.mediaPlayer .release();
+                    MyService.mediaPlayer  = null;
+                }
+                startPlaying(music,index);
+//                sendSongToMain(index,music);
             }
 
         });
@@ -117,22 +121,33 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
     private void startPlaying(Music music, int index) {
 
-        Intent i=new Intent(context,MusicPlaying.class);
+
+        Intent i=new Intent(context,MyService.class);
         Bundle bundle=new Bundle();
-//        bundle.putSerializable("MusicObject",music);
+        bundle.putSerializable("object_music",music);
         bundle.putInt("index",index);
-        bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
+//        bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
         //send check to Service (ktra xem no co dang chay bai nao khong)
 //        Intent check=new Intent(context,MyService.class);
 //        Bundle bundleCheck=new Bundle();
 //        bundleCheck.putBoolean("checkPlay",true);
 //        check.putExtras(bundleCheck);
-//        context.startService(check);
-
-
         i.putExtras(bundle);
+        context.startService(i);
 
-        context.startActivity(i);
+        Intent i1=new Intent(context,MusicPlaying.class);
+        Bundle bundle2=new Bundle();
+        bundle2.putInt("index",index);
+        bundle2.putSerializable("object_music",music);
+        bundle2.putBoolean("isPlaying",true);
+        i1.putExtras(bundle2);
+        context.startActivity(i1);
+        MainActivity.layoutMusic.setVisibility(View.VISIBLE);
+
+
+
+
+//        context.startActivity(i);
     }
     private void sendSongToMain(int index,Music music){
         Intent i=new Intent("send_song");
