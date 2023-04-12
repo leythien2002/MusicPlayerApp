@@ -191,8 +191,6 @@ public class MusicPlaying extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
-
                 sendActionToService(MyService.ACTION_NEXT);
             }
         });
@@ -333,44 +331,12 @@ public class MusicPlaying extends AppCompatActivity {
 
         });
     }
-    private void showInfoMusic(){
-        tvMusicName.setText(music.getSongTitle());
-        tvAuthor.setText(music.getAuthorName());
-//        //set Image for ImageView (disk play)
-//
-        Picasso.with(this).load(music.getSongimage()).into(circleImageView);
-        String duration= millisecondsToString(MyService.mediaPlayer.getDuration());
-        tvTimeTotal.setText(duration);
-        if(MyService.mediaPlayer!=null){
-            seekBar.setProgress(MyService.mediaPlayer.getCurrentPosition());
-            seekBar.setMax(MyService.mediaPlayer.getDuration());
-        }
-        //set durration
-        final double current=MyService.mediaPlayer.getCurrentPosition();
-        final String time= millisecondsToString((int)current);
-        tvTimeRun.setText(time);
-        seekBar.setProgress((int)current);
 
-
-    }
-    private void setRunnableMusic(){
-        final Handler handler=new Handler();
-        MusicPlaying.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(MyService.mediaPlayer!=null){
-                    showInfoMusic();
-                }
-                handler.postDelayed(this, 1000);
-            }
-
-        });
-    }
     private void sendActionToService(int action){
         Intent i=new Intent(this,MyService.class);
         Bundle bundle=new Bundle();
 
-        bundle.putBoolean("Favorite",true);
+        bundle.putBoolean("Favorite",isFav);
 
 
         bundle.putSerializable("object_music",music);

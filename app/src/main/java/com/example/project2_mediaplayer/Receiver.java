@@ -17,18 +17,12 @@ public class Receiver extends BroadcastReceiver {
         Music song= (Music) intent.getExtras().get("object_music");
         int index= (int) intent.getExtras().get("index");
         int size= MusicAdapter.mListmusic.size();
-//        if(actionMusic==MyService.ACTION_NEXT&&index<size-1){
-//            index++;
-//            song=MusicAdapter.mListmusic.get(index);
-//        }
-//        if(actionMusic==MyService.ACTION_PREV&&index>0){
-//            index--;
-//            song=MusicAdapter.mListmusic.get(index);
-//        }
+        boolean isFav= (boolean) intent.getExtras().get("Favorite");
         boolean isPlaying= (boolean) intent.getExtras().get("checkPlay");
         Intent iService=new Intent(context,MyService.class);
         iService.putExtra("action_music_service",actionMusic);
         iService.putExtra("object_music",song);
+        iService.putExtra("Favorite",isFav);
         iService.putExtra("checkPlay",isPlaying);
         iService.putExtra("index",index);
         iService.putExtra("sizeList",size);

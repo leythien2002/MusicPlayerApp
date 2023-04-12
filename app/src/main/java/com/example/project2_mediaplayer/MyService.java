@@ -146,7 +146,6 @@ public class MyService extends Service {
     private void nextMusic(){
         if(mediaPlayer!=null){
             stopCurrentMusic();
-
             ArrayList listMusic;
             if(isFav)
             {
@@ -160,7 +159,6 @@ public class MyService extends Service {
             }
             else {
                 if(currentIndex<listMusic.size()-1){
-
                     currentIndex++;
                 }
             }
@@ -220,6 +218,7 @@ public class MyService extends Service {
 
         i.putExtra("action_music", action);
         Bundle bundle = new Bundle();
+        bundle.putBoolean("Favorite",isFav);
         bundle.putSerializable("object_music", music);
         bundle.putBoolean("checkPlay",isPlaying);
         bundle.putInt("index",currentIndex);
