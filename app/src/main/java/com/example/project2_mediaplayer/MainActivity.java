@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvTitleSong,tvAuthorSong;
     private ImageButton btnStart,btnPrev,btnNext;
     static public int indexMain;
+
     private boolean isFav;
+
     private BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -56,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
             else{
                 Boolean check= (Boolean) bundle.get("checkChange");
                 isPlaying= (boolean) bundle.get("isPlaying");
+
                 isFav = bundle.getBoolean("Favorite");
+
                 if(check){
                     controlBottomLayout();
                 }
@@ -162,12 +166,14 @@ public class MainActivity extends AppCompatActivity {
     }
     private void controlBottomLayout(){
         if(MyService.mediaPlayer!=null){
+
             if (isFav){
                 music=FavoriteAdapter.mListFav.get(indexMain);
             }
             else {
                 music=MusicAdapter.mListmusic.get(indexMain);
             }
+
             layoutMusic.setVisibility(View.VISIBLE);
             showInfo();
         }
@@ -209,6 +215,43 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle=new Bundle();
         bundle.putBoolean("Favorite",isFav);
 
+        bundle.putSerializable("object_music",music);
+        bundle.putInt("index",indexMain);
+        bundle.putBoolean("checkPlay",isPlaying);
+//        bundle.putInt("sizeList",listSong.size());
+        i.putExtras(bundle);
+        i.putExtra("action_music_service",action);//cai nay licen quan toi receiver .
+        startService(i);
+    }
+
+    //checkpermission granted ?
+//    private void getPermiss(){
+//        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M){
+//            return;
+//        }
+//        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+//            Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+//        }
+//        else{
+//            String[] permission={Manifest.permission.POST_NOTIFICATIONS};
+//            requestPermissions(permission,REQUEST_PERMISSION_CODE);
+//        }
+//    }
+
+    private void startPlaying(Music music, int index) {
+
+        Intent i=new Intent(this,MusicPlaying.class);
+        Bundle bundle=new Bundle();
+        bundle.putInt("index",index);
+        bundle.putSerializable("object_music",music);
+        bundle.putBoolean("isPlaying",isPlaying);
+
+        i.putExtras(bundle);
+        startActivity(i);
+    }
+    private void sendActionToService(int action){
+        Intent i=new Intent(this,MyService.class);
+        Bundle bundle=new Bundle();
         bundle.putSerializable("object_music",music);
         bundle.putInt("index",indexMain);
         bundle.putBoolean("checkPlay",isPlaying);

@@ -140,6 +140,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
 //        bundle2.putBoolean("Favorite",false);
 
+
         bundle2.putInt("index",index);
         bundle2.putSerializable("object_music",music);
         bundle2.putBoolean("isPlaying",true);
@@ -156,6 +157,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
         Intent i=new Intent("send_song");
         Bundle bundle=new Bundle();
         bundle.putInt("index",index);
+
         bundle.putSerializable("MusicObject",music);
         bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
 
