@@ -28,7 +28,6 @@ import java.util.List;
 public class ListMusicByAuthor extends AppCompatActivity {
     private RecyclerView rcvMusic;
     private MusicAdapter musicAdapter;
-
     private ArrayList<Music> list;
     private TextView author_name;
     private Author author_selected;

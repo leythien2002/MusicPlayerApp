@@ -126,4 +126,8 @@ public class ListmusicFragment extends Fragment {
             }
         });}
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 }
