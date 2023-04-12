@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.project2_mediaplayer.FavoriteAdapter;
 import com.example.project2_mediaplayer.Music;
 import com.example.project2_mediaplayer.MusicAdapter;
 import com.example.project2_mediaplayer.R;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 public class SettingFragment extends Fragment {
     private View mView;
     private RecyclerView rcvMusic;
-    private MusicAdapter musicAdapter;
+    private FavoriteAdapter favoriteAdapter;
 
     private ArrayList<Music> list;
     private int count;
@@ -38,21 +39,17 @@ public class SettingFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_setting, container, false);
+
+
         list = new ArrayList<>();
         getListMusic();
         rcvMusic = mView.findViewById(R.id.rcv_music);
 
-        musicAdapter = new MusicAdapter(getContext(), list);
-
+        favoriteAdapter = new FavoriteAdapter(getContext(), list);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         rcvMusic.setLayoutManager(layoutManager);
-
-
-        musicAdapter.setData(list);
-
-        rcvMusic.setAdapter(musicAdapter);
-
-
+        favoriteAdapter.setData(list);
+        rcvMusic.setAdapter(favoriteAdapter);
         return mView;
     }
 
@@ -70,7 +67,7 @@ public class SettingFragment extends Fragment {
                     if (music != null) {
                         list.add(music);
                     }
-                    musicAdapter.notifyDataSetChanged();
+                    favoriteAdapter.notifyDataSetChanged();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -89,7 +86,7 @@ public class SettingFragment extends Fragment {
                         break;
                     }
                 }
-                musicAdapter.notifyDataSetChanged();
+                favoriteAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -104,7 +101,7 @@ public class SettingFragment extends Fragment {
                         break;
                     }
                 }
-                musicAdapter.notifyDataSetChanged();
+                favoriteAdapter.notifyDataSetChanged();
             }
 
             @Override

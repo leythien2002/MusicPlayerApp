@@ -3,7 +3,6 @@ package com.example.project2_mediaplayer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,38 +22,37 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHolder> {
+public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder> {
     private Context context;
-    static public ArrayList<Music> mListmusic;
+    static public ArrayList<Music> mListFav;
 
     private int favorite;
     private DatabaseReference mDatabase;
 
 
 
-    public MusicAdapter(Context context, ArrayList<Music> mListmusic) {
+    public FavoriteAdapter(Context context, ArrayList<Music> mListmusic) {
         this.context = context;
-        this.mListmusic = mListmusic;
+        this.mListFav = mListmusic;
     }
-    public MusicAdapter(){}
+    public FavoriteAdapter(){}
 
     public  void setData(ArrayList<Music> list){
-        this.mListmusic =list;
+        this.mListFav =list;
         notifyDataSetChanged();
     }
     @NonNull
     @Override
-    public MusicViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_feature_song,parent,false);
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        return new MusicViewHolder(view) ;
+        return new FavoriteViewHolder(view) ;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MusicViewHolder holder, int position) {
-        Music music = mListmusic.get(position);
+    public void onBindViewHolder(@NonNull FavoriteViewHolder holder, int position) {
+        Music music = mListFav.get(position);
         if(music == null){
             return;
         }
@@ -120,46 +118,37 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
 
     private void startPlaying(Music music, int index) {
+
+
         Intent i=new Intent(context,MyService.class);
         Bundle bundle=new Bundle();
+
+        bundle.putBoolean("Favorite",true);
+
         bundle.putSerializable("object_music",music);
         bundle.putInt("index",index);
-        bundle.putBoolean("Favorite",false);
-
-//        bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
-        //send check to Service (ktra xem no co dang chay bai nao khong)
-//        Intent check=new Intent(context,MyService.class);
-//        Bundle bundleCheck=new Bundle();
-//        bundleCheck.putBoolean("checkPlay",true);
-//        check.putExtras(bundleCheck);
         i.putExtras(bundle);
         context.startService(i);
 
         Intent i1=new Intent(context,MusicPlaying.class);
         Bundle bundle2=new Bundle();
 
-//        bundle2.putBoolean("Favorite",false);
-
+        bundle2.putBoolean("Favorite",true);
 
         bundle2.putInt("index",index);
         bundle2.putSerializable("object_music",music);
         bundle2.putBoolean("isPlaying",true);
+
         i1.putExtras(bundle2);
         context.startActivity(i1);
         MainActivity.layoutMusic.setVisibility(View.VISIBLE);
-
-
-
-
-//        context.startActivity(i);
     }
     private void sendSongToMain(int index,Music music){
         Intent i=new Intent("send_song");
         Bundle bundle=new Bundle();
         bundle.putInt("index",index);
-
         bundle.putSerializable("MusicObject",music);
-        bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
+        bundle.putParcelableArrayList("ListSong", (ArrayList) mListFav);
 
         i.putExtras(bundle);
         LocalBroadcastManager.getInstance(context).sendBroadcast(i);
@@ -168,28 +157,28 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
     @Override
     public int getItemCount() {
-        if (mListmusic!=null){
-            return mListmusic.size();
+        if (mListFav !=null){
+            return mListFav.size();
         }
         return 0;
     }
 
 
 
-    public class MusicViewHolder extends RecyclerView.ViewHolder{
+    public class FavoriteViewHolder extends RecyclerView.ViewHolder{
         private ConstraintLayout constraintLayout;
         private TextView tvMusicName;
         private TextView tvMusicAuthor;
         private ImageView imgMusicImage;
         private ImageView imgFavorite;
 
-            public MusicViewHolder(@NonNull View itemView) {
-                super(itemView);
-                constraintLayout=itemView.findViewById(R.id.item_layout);
-                tvMusicAuthor = itemView.findViewById(R.id.music_author);
-                tvMusicName = itemView.findViewById(R.id.music_name);
-                imgMusicImage = itemView.findViewById(R.id.music_image);
-                imgFavorite = itemView.findViewById(R.id.favorite);
-            }
+        public FavoriteViewHolder(@NonNull View itemView) {
+            super(itemView);
+            constraintLayout=itemView.findViewById(R.id.item_layout);
+            tvMusicAuthor = itemView.findViewById(R.id.music_author);
+            tvMusicName = itemView.findViewById(R.id.music_name);
+            imgMusicImage = itemView.findViewById(R.id.music_image);
+            imgFavorite = itemView.findViewById(R.id.favorite);
+        }
     }
 }

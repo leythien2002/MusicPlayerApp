@@ -47,6 +47,9 @@ public class MusicPlaying extends AppCompatActivity {
     private ArrayList<Music> listSong;
     private int currentIndex;
 
+    private boolean isFav;
+
+
     private Random rand=new Random();
 
 
@@ -61,6 +64,9 @@ public class MusicPlaying extends AppCompatActivity {
             else{
                 music= (Music) bundle.get("object_music");
                 currentIndex= (int) bundle.get("index");
+
+                isFav = bundle.getBoolean("Favorite");
+
                 MainActivity.indexMain=currentIndex;
                 int action= (int) bundle.get("action");
                 isPlaying= (boolean) bundle.get("checkPlaying");
@@ -103,6 +109,9 @@ public class MusicPlaying extends AppCompatActivity {
         if(bundle==null){
             return;
         }
+
+        isFav = bundle.getBoolean("Favorite");
+
         music= (Music) bundle.getSerializable("object_music");
         currentIndex= (int) bundle.get("index");
         MainActivity.indexMain=currentIndex;
@@ -183,9 +192,8 @@ public class MusicPlaying extends AppCompatActivity {
             public void onClick(View view) {
 
 
+
                 sendActionToService(MyService.ACTION_NEXT);
-
-
             }
         });
         btnPrevious.setOnClickListener(new View.OnClickListener() {
@@ -288,7 +296,42 @@ public class MusicPlaying extends AppCompatActivity {
 
 
 
+
         }
+    }
+    private void showInfoMusic(){
+        tvMusicName.setText(music.getSongTitle());
+        tvAuthor.setText(music.getAuthorName());
+//        //set Image for ImageView (disk play)
+//
+        Picasso.with(this).load(music.getSongimage()).into(circleImageView);
+        String duration= millisecondsToString(MyService.mediaPlayer.getDuration());
+        tvTimeTotal.setText(duration);
+        if(MyService.mediaPlayer!=null){
+            seekBar.setProgress(MyService.mediaPlayer.getCurrentPosition());
+            seekBar.setMax(MyService.mediaPlayer.getDuration());
+
+        }
+        //set durration
+        final double current=MyService.mediaPlayer.getCurrentPosition();
+        final String time= millisecondsToString((int)current);
+        tvTimeRun.setText(time);
+        seekBar.setProgress((int)current);
+
+
+    }
+    private void setRunnableMusic(){
+        final Handler handler=new Handler();
+        MusicPlaying.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(MyService.mediaPlayer!=null){
+                    showInfoMusic();
+                }
+                handler.postDelayed(this, 1000);
+            }
+
+        });
     }
     private void showInfoMusic(){
         tvMusicName.setText(music.getSongTitle());
@@ -326,8 +369,13 @@ public class MusicPlaying extends AppCompatActivity {
     private void sendActionToService(int action){
         Intent i=new Intent(this,MyService.class);
         Bundle bundle=new Bundle();
+
+        bundle.putBoolean("Favorite",true);
+
+
         bundle.putSerializable("object_music",music);
         bundle.putInt("index",currentIndex);
+
         bundle.putBoolean("checkPlay",isPlaying);
 //        bundle.putInt("sizeList",listSong.size());
         i.putExtras(bundle);
@@ -337,6 +385,10 @@ public class MusicPlaying extends AppCompatActivity {
     private void sendSongToMain(){
         Intent i=new Intent("send_signal");
         Bundle bundle=new Bundle();
+
+        bundle.putBoolean("Favorite",isFav);
+
+
         bundle.putBoolean("checkChange",true);
         bundle.putBoolean("isPlaying",isPlaying);
         i.putExtras(bundle);

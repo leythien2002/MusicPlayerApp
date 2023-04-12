@@ -48,6 +48,9 @@ public class MyService extends Service {
     private Music music;
     private boolean isPlaying;
     private int currentIndex,size;
+
+    private boolean isFav;
+
     private Random rand=new Random();
 
 
@@ -70,6 +73,9 @@ public class MyService extends Service {
         int action = intent.getIntExtra("action_music_service", 0);
         if (bundle != null) {
             music = (Music) bundle.get("object_music");
+
+            isFav = bundle.getBoolean("Favorite");
+
             if(action!=ACTION_CLEAR){
                 currentIndex= (int) bundle.get("index");
                 if (music != null) {
@@ -140,17 +146,28 @@ public class MyService extends Service {
     private void nextMusic(){
         if(mediaPlayer!=null){
             stopCurrentMusic();
-            if(MusicPlaying.isRandom){
-                currentIndex=rand.nextInt(MusicAdapter.mListmusic.size());
 
+            ArrayList listMusic;
+            if(isFav)
+            {
+                listMusic = FavoriteAdapter.mListFav;
             }
             else {
-                if(currentIndex<MusicAdapter.mListmusic.size()-1){
+                listMusic = MusicAdapter.mListmusic;
+            }
+            if(MusicPlaying.isRandom && !(listMusic.isEmpty())){
+                currentIndex=rand.nextInt(listMusic.size());
+            }
+            else {
+                if(currentIndex<listMusic.size()-1){
+
                     currentIndex++;
                 }
             }
 
-            changeNewMusic();
+
+            changeNewMusic(isFav);
+
             mediaPlayer.start();
             sendActionToActivity(ACTION_NEXT);
             sendNotification(music);
@@ -163,7 +180,9 @@ public class MyService extends Service {
             if(currentIndex>0){
                 currentIndex--;
             }
-            changeNewMusic();
+
+            changeNewMusic(isFav);
+
             mediaPlayer.start();
             sendActionToActivity(ACTION_PREV);
             sendNotification(music);
@@ -174,8 +193,15 @@ public class MyService extends Service {
         mediaPlayer.release();
         mediaPlayer=null;
     }
-    private void changeNewMusic(){
-        music=MusicAdapter.mListmusic.get(currentIndex);
+
+    private void changeNewMusic(boolean isFav){
+        if (isFav){
+            music=FavoriteAdapter.mListFav.get(currentIndex);
+        }
+        else {
+            music=MusicAdapter.mListmusic.get(currentIndex);
+        }
+
         if (mediaPlayer == null) {
             mediaPlayer=MediaPlayer.create(this, Uri.parse(music.getSongLink()));
         }
@@ -287,6 +313,10 @@ public class MyService extends Service {
     private void sendActionToActivity(int action){
         Intent i=new Intent("send_data");
         Bundle bundle=new Bundle();
+
+        bundle.putBoolean("Favorite",isFav);
+
+
         bundle.putSerializable("object_music", music);
         bundle.putInt("action",action);
         bundle.putInt("index",currentIndex);
