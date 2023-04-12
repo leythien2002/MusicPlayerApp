@@ -191,8 +191,6 @@ public class MusicPlaying extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
-
                 sendActionToService(MyService.ACTION_NEXT);
             }
         });
@@ -333,11 +331,12 @@ public class MusicPlaying extends AppCompatActivity {
 
         });
     }
+
     private void sendActionToService(int action){
         Intent i=new Intent(this,MyService.class);
         Bundle bundle=new Bundle();
 
-        bundle.putBoolean("Favorite",true);
+        bundle.putBoolean("Favorite",isFav);
 
 
         bundle.putSerializable("object_music",music);
