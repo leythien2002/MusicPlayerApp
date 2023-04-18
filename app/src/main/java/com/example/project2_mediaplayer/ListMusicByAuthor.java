@@ -26,25 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListMusicByAuthor extends AppCompatActivity {
-    private RecyclerView rcvMusic;
-    private MusicAdapter musicAdapter;
+    private RecyclerView rcvMusic1;
+    private MusicAdapter musicAdapter1;
     private ArrayList<Music> list;
     private TextView author_name;
     private Author author_selected;
     private ImageView img_author;
-//    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            Bundle bundle=intent.getExtras();
-//            if(bundle==null){
-//                return;
-//            }
-//            else{
-//                Author action= (Author) bundle.get("AuthorObject");
-//            }
-//
-//        }
-//    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,20 +54,18 @@ public class ListMusicByAuthor extends AppCompatActivity {
 
             }
         list = new ArrayList<>();
-
         getListMusic();
-        rcvMusic = findViewById(R.id.rcv_musicbyauthor);
-        musicAdapter =new MusicAdapter(this, list);
+        rcvMusic1 = findViewById(R.id.rcv_musicbyauthor);
+        musicAdapter1 =new MusicAdapter(this, list);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        rcvMusic.setLayoutManager(layoutManager);
+        rcvMusic1.setLayoutManager(layoutManager);
 
 
-        musicAdapter.setData(list);
+        musicAdapter1.setData(list);
 
-        rcvMusic.setAdapter(musicAdapter);
+        rcvMusic1.setAdapter(musicAdapter1);
 
         }
-
     private List<Music> getListMusic() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("music/song");
         Query query = ref.orderByChild("authorName").equalTo(author_selected.getAuthorname());
@@ -94,7 +80,7 @@ public class ListMusicByAuthor extends AppCompatActivity {
                         list.add(music);
                         System.out.println(music.getSongTitle());
                     }
-                    musicAdapter.notifyDataSetChanged();
+                    musicAdapter1.notifyDataSetChanged();
                 }
             }
 
@@ -107,6 +93,8 @@ public class ListMusicByAuthor extends AppCompatActivity {
         query.addListenerForSingleValueEvent(eventListener);
         return list;
 
+
     }
+
 
 }

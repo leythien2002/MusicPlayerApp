@@ -57,6 +57,7 @@ public class ListmusicFragment extends Fragment {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         rcvMusic.setLayoutManager(layoutManager);
+        rcvMusic.setItemAnimator(null);
 
 
         musicAdapter.setData(list);
@@ -72,7 +73,6 @@ public class ListmusicFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
     }
-
 
     private void getListMusic() {
 
@@ -125,9 +125,15 @@ public class ListmusicFragment extends Fragment {
 
             }
         });}
-
     @Override
     public void onResume() {
+        rcvMusic.getRecycledViewPool().clear();
+        musicAdapter.setData(list);
+        musicAdapter.notifyDataSetChanged();
         super.onResume();
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 }

@@ -11,6 +11,6 @@
         android:title="@string/bottom_author" />
     <item
         android:id="@+id/bottom_setting"
-        android:icon="@drawable/setting"
+        android:icon="@drawable/favoritebottom"
         android:title="@string/bottom_setting" />
 </menu>

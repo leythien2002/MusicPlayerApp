@@ -32,7 +32,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int REQUEST_PERMISSION_CODE=10;
+    public static final int REQUEST_PERMISSION_CODE = 10;
     private ViewPager2 mViewpager2;
     private BottomNavigationView mBottomNavigationView;
     //layout music
@@ -42,26 +42,25 @@ public class MainActivity extends AppCompatActivity {
     private Music music;
     static public LinearLayout layoutMusic;
     private ImageView imgMusic;
-    private TextView tvTitleSong,tvAuthorSong;
-    private ImageButton btnStart,btnPrev,btnNext;
+    private TextView tvTitleSong, tvAuthorSong;
+    private ImageButton btnStart, btnPrev, btnNext;
     static public int indexMain;
 
     private boolean isFav;
 
-    private BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Bundle bundle=intent.getExtras();
-            if(bundle==null){
+            Bundle bundle = intent.getExtras();
+            if (bundle == null) {
                 return;
-            }
-            else{
-                Boolean check= (Boolean) bundle.get("checkChange");
-                isPlaying= (boolean) bundle.get("isPlaying");
+            } else {
+                Boolean check = (Boolean) bundle.get("checkChange");
+                isPlaying = (boolean) bundle.get("isPlaying");
 
                 isFav = bundle.getBoolean("Favorite");
 
-                if(check){
+                if (check) {
                     controlBottomLayout();
                 }
             }
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,new IntentFilter("send_signal"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("send_signal"));
 
         initUi();
 
@@ -121,30 +120,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void initUi(){
-        layoutMusic=findViewById(R.id.layout_music);
-        imgMusic=layoutMusic.findViewById(R.id.imgSong);
-        tvAuthorSong=layoutMusic.findViewById(R.id.tvAuthorSong);
-        tvTitleSong=layoutMusic.findViewById(R.id.tvTitleSong);
-        btnStart=layoutMusic.findViewById(R.id.button_toggle_play_pause);
-        btnNext=layoutMusic.findViewById(R.id.button_next);
-        btnPrev=layoutMusic.findViewById(R.id.button_prev);
+
+    private void initUi() {
+        layoutMusic = findViewById(R.id.layout_music);
+        imgMusic = layoutMusic.findViewById(R.id.imgSong);
+        tvAuthorSong = layoutMusic.findViewById(R.id.tvAuthorSong);
+        tvTitleSong = layoutMusic.findViewById(R.id.tvTitleSong);
+        btnStart = layoutMusic.findViewById(R.id.button_toggle_play_pause);
+        btnNext = layoutMusic.findViewById(R.id.button_next);
+        btnPrev = layoutMusic.findViewById(R.id.button_prev);
         //getSongfromAdapter
         layoutMusic.setVisibility(View.GONE);
 
         layoutMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startPlaying(music,indexMain);
+                startPlaying(music, indexMain);
             }
         });
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isPlaying){
+                if (isPlaying) {
                     sendActionToService(MyService.ACTION_PAUSE);
-                }
-                else{
+                } else {
                     sendActionToService(MyService.ACTION_RESUME);
                 }
             }
@@ -164,25 +163,25 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    private void controlBottomLayout(){
-        if(MyService.mediaPlayer!=null){
 
-            if (isFav){
-                music=FavoriteAdapter.mListFav.get(indexMain);
-            }
-            else {
-                music=MusicAdapter.mListmusic.get(indexMain);
+    private void controlBottomLayout() {
+        if (MyService.mediaPlayer != null) {
+
+            if (isFav) {
+                music = FavoriteAdapter.mListFav.get(indexMain);
+            } else {
+                music = MusicAdapter.mListmusic.get(indexMain);
             }
 
             layoutMusic.setVisibility(View.VISIBLE);
             showInfo();
-        }
-        else {
+        } else {
             layoutMusic.setVisibility(View.GONE);
         }
     }
-    private void showInfo(){
-        if(music==null){
+
+    private void showInfo() {
+        if (music == null) {
             return;
         }
 
@@ -190,37 +189,38 @@ public class MainActivity extends AppCompatActivity {
         tvTitleSong.setText(music.getSongTitle());
         tvAuthorSong.setText(music.getAuthorName());
 
-        if(isPlaying){
+        if (isPlaying) {
             btnStart.setImageResource(R.drawable.pause);
-        }
-        else{
+        } else {
             btnStart.setImageResource(R.drawable.ic_play_white);
         }
     }
+
     private void startPlaying(Music music, int index) {
 
-        Intent i=new Intent(this,MusicPlaying.class);
-        Bundle bundle=new Bundle();
-        bundle.putBoolean("Favorite",isFav);
+        Intent i = new Intent(this, MusicPlaying.class);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("Favorite", isFav);
 
-        bundle.putInt("index",index);
-        bundle.putSerializable("object_music",music);
-        bundle.putBoolean("isPlaying",isPlaying);
+        bundle.putInt("index", index);
+        bundle.putSerializable("object_music", music);
+        bundle.putBoolean("isPlaying", isPlaying);
 
         i.putExtras(bundle);
         startActivity(i);
     }
-    private void sendActionToService(int action){
-        Intent i=new Intent(this,MyService.class);
-        Bundle bundle=new Bundle();
-        bundle.putBoolean("Favorite",isFav);
 
-        bundle.putSerializable("object_music",music);
-        bundle.putInt("index",indexMain);
-        bundle.putBoolean("checkPlay",isPlaying);
+    private void sendActionToService(int action) {
+        Intent i = new Intent(this, MyService.class);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("Favorite", isFav);
+
+        bundle.putSerializable("object_music", music);
+        bundle.putInt("index", indexMain);
+        bundle.putBoolean("checkPlay", isPlaying);
 //        bundle.putInt("sizeList",listSong.size());
         i.putExtras(bundle);
-        i.putExtra("action_music_service",action);//cai nay licen quan toi receiver .
+        i.putExtra("action_music_service", action);//cai nay licen quan toi receiver .
         startService(i);
     }
 
@@ -237,7 +237,4 @@ public class MainActivity extends AppCompatActivity {
 //            requestPermissions(permission,REQUEST_PERMISSION_CODE);
 //        }
 //    }
-
-
-
 }
