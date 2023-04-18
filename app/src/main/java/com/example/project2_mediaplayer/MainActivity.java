@@ -239,19 +239,4 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
 
-    //checkpermission granted ?
-//    private void getPermiss(){
-//        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M){
-//            return;
-//        }
-//        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-//            Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
-//        }
-//        else{
-//            String[] permission={Manifest.permission.POST_NOTIFICATIONS};
-//            requestPermissions(permission,REQUEST_PERMISSION_CODE);
-//        }
-//    }
-
-
 }

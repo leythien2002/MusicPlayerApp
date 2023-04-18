@@ -2,7 +2,6 @@ package com.example.project2_mediaplayer;
 
 import static com.example.project2_mediaplayer.MyApplication.CHANNEL_ID;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -16,8 +15,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -81,7 +78,7 @@ public class MyService extends Service {
                 if (music != null) {
                     startMusic(music);
 
-//                   isPlaying= (boolean) bundle.get("checkPlay");
+
                     sendNotification(music);
 
                 }
@@ -112,6 +109,7 @@ public class MyService extends Service {
                 break;
             case ACTION_CLEAR:
                 stopSelf();//????
+                stopCurrentMusic();
                 sendActionToActivity(ACTION_CLEAR);
                 break;
             case ACTION_NEXT:
@@ -126,7 +124,6 @@ public class MyService extends Service {
 
     private void pauseMusic() {
         if(mediaPlayer!=null&&isPlaying){
-//        if (isPlaying) {
             mediaPlayer.pause();
             isPlaying = false;
             sendActionToActivity(ACTION_PAUSE);
@@ -135,9 +132,7 @@ public class MyService extends Service {
     }
 
     private void resumeMusic() {
-//        if(mediaPlayer!=null&&isPlaying){
         if (!isPlaying) {
-//            mediaPlayer.start();
             isPlaying = true;
             sendActionToActivity(ACTION_RESUME);
             sendNotification(music);
@@ -157,6 +152,9 @@ public class MyService extends Service {
             if(MusicPlaying.isRandom && !(listMusic.isEmpty())){
                 currentIndex=rand.nextInt(listMusic.size());
             }
+            else if(MusicPlaying.isLoop&& !(listMusic.isEmpty())){
+
+            }
             else {
                 if(currentIndex<listMusic.size()-1){
                     currentIndex++;
@@ -175,12 +173,27 @@ public class MyService extends Service {
     private void prevMusic(){
         if(mediaPlayer!=null){
             stopCurrentMusic();
-            if(currentIndex>0){
-                currentIndex--;
+            ArrayList listMusic;
+            if(isFav)
+            {
+                listMusic = FavoriteAdapter.mListFav;
+            }
+            else {
+                listMusic = MusicAdapter.mListmusic;
+            }
+            if(MusicPlaying.isRandom && !(listMusic.isEmpty())){
+                currentIndex=rand.nextInt(listMusic.size());
+            }
+            else if(MusicPlaying.isLoop&& !(listMusic.isEmpty())){
+
+            }
+            else {
+                if(currentIndex>0){
+                    currentIndex--;
+                }
             }
 
             changeNewMusic(isFav);
-
             mediaPlayer.start();
             sendActionToActivity(ACTION_PREV);
             sendNotification(music);
@@ -205,12 +218,15 @@ public class MyService extends Service {
         }
     }
     private void onCompleteMusic(){
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                nextMusic();
-            }
-        });
+        if(mediaPlayer!=null){
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    nextMusic();
+                }
+            });
+        }
+
     }
 
     private PendingIntent getPendingIntent(Context context, int action) {
@@ -237,7 +253,7 @@ public class MyService extends Service {
         //set action pause and resume
         NotificationCompat.Action action2;
         if (isPlaying) {
-            action2 = new NotificationCompat.Action.Builder(R.drawable.pause, "Pause", getPendingIntent(this, ACTION_PAUSE)).build();
+            action2 = new NotificationCompat.Action.Builder(R.drawable.ic_pause, "Pause", getPendingIntent(this, ACTION_PAUSE)).build();
         } else {
             action2 = new NotificationCompat.Action.Builder(R.drawable.ic_play_white, "Resume", getPendingIntent(this, ACTION_RESUME)).build();
         }
@@ -280,33 +296,6 @@ public class MyService extends Service {
             }
         });
 
-//        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-//                .setSmallIcon(R.drawable.ic_music)
-//                .setSubText("MediaApp")
-//                .setContentTitle(music.getSongTitle())
-//                .setContentText(music.getAuthorName())
-//                .setLargeIcon(bitmap)
-//                // Show controls on lock screen even when user hides sensitive content.
-//                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-//                // Add media control buttons that invoke intents in your media service
-//                .addAction(R.drawable.ic_skip_previous_white_24dp, "Previous", null) // #0
-//                .addAction(action2)  // #1
-//                .addAction(R.drawable.ic_skip_next_white_24dp, "Next", null)     // #2
-//                //swipe to clear notification event
-//                .setDeleteIntent(getPendingIntent(this,ACTION_CLEAR))
-//                // Apply the media style template
-//                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-//                        .setShowActionsInCompactView(1 /* #1: pause button */)
-//                        .setMediaSession(mediaSessionCompat.getSessionToken()))
-//                .build();
-//
-//        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
-//        //check permission
-//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-//            // ??
-//        }
-//        managerCompat.notify(1, notification); //id 1 la nó sẽ đè lên nhau, muốn nhiều notification thì đổi cách khác.
-
     }
 
     private void sendActionToActivity(int action){
@@ -327,10 +316,6 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        if(mediaPlayer!=null){
-//            mediaPlayer.release();
-//            mediaPlayer=null;
-//        }
         sendActionToActivity(ACTION_CLEAR);
     }
 }

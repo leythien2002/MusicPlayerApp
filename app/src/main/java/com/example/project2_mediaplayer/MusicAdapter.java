@@ -59,7 +59,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
             return;
         }
         Picasso.with(context).load(music.getSongimage()).into(holder.imgMusicImage);
-//        holder.imgMusicImage.setImageResource(music.getSongimage());
+
         holder.tvMusicAuthor.setText(music.getAuthorName());
         holder.tvMusicName.setText(music.getSongTitle());
         if (music.getFavorite()==0){
@@ -79,7 +79,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
                     MyService.mediaPlayer  = null;
                 }
                 startPlaying(music,index);
-//                sendSongToMain(index,music);
+
             }
 
         });
@@ -126,20 +126,12 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
         bundle.putInt("index",index);
         bundle.putBoolean("Favorite",false);
 
-//        bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
-        //send check to Service (ktra xem no co dang chay bai nao khong)
-//        Intent check=new Intent(context,MyService.class);
-//        Bundle bundleCheck=new Bundle();
-//        bundleCheck.putBoolean("checkPlay",true);
-//        check.putExtras(bundleCheck);
+
         i.putExtras(bundle);
         context.startService(i);
 
         Intent i1=new Intent(context,MusicPlaying.class);
         Bundle bundle2=new Bundle();
-
-//        bundle2.putBoolean("Favorite",false);
-
 
         bundle2.putInt("index",index);
         bundle2.putSerializable("object_music",music);
@@ -148,22 +140,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
         context.startActivity(i1);
         MainActivity.layoutMusic.setVisibility(View.VISIBLE);
 
-
-
-
-//        context.startActivity(i);
     }
-    private void sendSongToMain(int index,Music music){
-        Intent i=new Intent("send_song");
-        Bundle bundle=new Bundle();
-        bundle.putInt("index",index);
 
-        bundle.putSerializable("MusicObject",music);
-        bundle.putParcelableArrayList("ListSong", (ArrayList) mListmusic);
-
-        i.putExtras(bundle);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(i);
-    }
 
 
     @Override
